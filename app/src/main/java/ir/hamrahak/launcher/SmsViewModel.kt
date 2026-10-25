@@ -74,7 +74,7 @@ class SmsViewModel @JvmOverloads constructor(application: Application, private v
         mutable.value = mutable.value.copy(recipient = recipient.take(32), draft = text.take(5000))
     }
     fun sendConfirmed(address: String, body: String) {
-        if (mutable.value.submitting) return
+        if (mutable.value.submitting || mutable.value.report?.let { !it.complete && !mutable.value.reportExpired } == true) return
         if (!hasPermission(Manifest.permission.SEND_SMS)) { error("برای فرستادن پیامک، اجازهٔ ارسال لازم است."); return }
         mutable.value = mutable.value.copy(submitting = true, error = null)
         viewModelScope.launch {
@@ -83,7 +83,6 @@ class SmsViewModel @JvmOverloads constructor(application: Application, private v
                 saved["sendingToken"] = result.getOrThrow()
                 saved["sendingAddress"] = address
                 saved["sendingBody"] = body
-                mutable.value = mutable.value.copy(submitting = false)
                 refreshReport()
             } else {
                 val detail = if (result.exceptionOrNull()?.message == "NO_DEFAULT_SIM")
@@ -98,6 +97,7 @@ class SmsViewModel @JvmOverloads constructor(application: Application, private v
         reportRead?.cancel()
         reportRead = viewModelScope.launch {
             val report = withContext(Dispatchers.IO) { repository.journal.read() }
+            val currentSubmission = report != null && report.token == saved.get<String>("sendingToken")
             // Submission is not delivery: retain failed/unknown drafts and prevent accidental resends.
             if (report?.sent == true && report.token == saved.get<String>("sendingToken")) {
                 if (mutable.value.recipient == saved.get<String>("sendingAddress") && mutable.value.draft == saved.get<String>("sendingBody")) draft(text = "")
@@ -105,7 +105,8 @@ class SmsViewModel @JvmOverloads constructor(application: Application, private v
                 saved["sendingAddress"] = null
                 saved["sendingBody"] = null
             }
-            mutable.value = mutable.value.copy(report = report, reportExpired = report?.expired == true)
+            mutable.value = mutable.value.copy(report = report, reportExpired = report?.expired == true,
+                submitting = if (currentSubmission) false else mutable.value.submitting)
             timeout?.cancel()
             if (report != null && !report.complete && !report.expired) timeout = viewModelScope.launch {
                 delay((report.created + 300_000 - System.currentTimeMillis()).coerceAtLeast(1)); refreshReport()

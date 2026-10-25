@@ -114,7 +114,7 @@ fun SmsScreen(contacts: List<FamilyContact>, size: Int, onHome: () -> Unit, open
                 val address = if (mode == "thread") thread?.address else null
                 if (address != null && state.draft.isNotBlank() && comparableSmsAddress(address) != comparableSmsAddress(state.recipient)) replaceDraftFor = address
                 else { if (address != null) vm.draft(recipient = address); mode = "compose" }
-            }, enabled = mode != "thread" || normalizePhone(thread?.address.orEmpty()) != null,
+            }, enabled = !waiting && (mode != "thread" || normalizePhone(thread?.address.orEmpty()) != null),
                 modifier = Modifier.fillMaxWidth().heightIn(min = 64.dp)) {
                 Text(if (mode == "thread") "پاسخ دادن" else if (state.draft.isNotBlank()) "ادامهٔ پیش‌نویس" else "نوشتن پیام جدید", fontSize = 22.sp)
             }

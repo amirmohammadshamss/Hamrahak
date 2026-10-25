@@ -6,6 +6,10 @@ Execution started: a discovery Android prototype and research protocol are now i
 
 User-directed additions during implementation: version 0.3 includes an in-app camera and photo viewer with explicit return-to-launcher controls, actual app icons, illustrated tutorials, and visual/animation polish. These replace the original external-camera/gallery recommendation for those two functions. Camera access is requested only at use; account/network/direct-call permissions remain excluded. Discovery and physical-device acceptance gates are still pending.
 
+Version 0.4 user-directed scope change: Messages includes an experimental sideload SMS inbox/reader/composer with runtime read/send consent and explicit per-message confirmation. This supersedes the original external-messaging-only boundary for direct-install evaluation. The existing default SMS/MMS handler is retained. Restricted permission/store eligibility is a release blocker documented in [SMS_FEATURE.md](docs/SMS_FEATURE.md), not an accepted MVP/store capability.
+
+Version 0.5 user-directed scope change: Home Call opens an internal manual dial pad and supports explicitly confirmed ACTION_CALL with just-in-time CALL_PHONE consent. It retains the existing phone app for ongoing/incoming calls and uses ACTION_DIAL for emergency paths. This is not a full default-dialer/InCallService implementation; see [DIALER_FEATURE.md](docs/DIALER_FEATURE.md).
+
 ## Recommendation
 
 Plan for a 12-week, offline-first native Android MVP, with a prototype validation gate at the end of week 2. Build only the home screen, photo-contact calling, and simplified app selection for that gate. Continue to full implementation if testing demonstrates easier, more independent use; otherwise revise the interaction design before expanding scope.

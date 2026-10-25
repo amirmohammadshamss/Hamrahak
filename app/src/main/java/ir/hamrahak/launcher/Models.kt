@@ -23,7 +23,8 @@ data class LaunchableApp(val label: String, val component: ComponentName) {
 }
 
 /** Accept a single dialable number, never URI commands, extensions, or USSD codes. */
-fun normalizePhone(input: String): String? {
+fun normalizePhone(input: String, minimumDigits: Int = 3): String? {
+    require(minimumDigits in 1..15)
     val normalized = buildString {
         input.trim().forEach { ch ->
             when {
@@ -35,7 +36,7 @@ fun normalizePhone(input: String): String? {
             }
         }
     }
-    return normalized.takeIf { it.matches(Regex("\\+?[0-9]{3,15}")) }
+    return normalized.takeIf { it.matches(Regex("\\+?[0-9]{$minimumDigits,15}")) }
 }
 
 fun persianDigits(text: String): String = text.map {

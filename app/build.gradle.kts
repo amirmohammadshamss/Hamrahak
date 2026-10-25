@@ -10,8 +10,8 @@ android {
         applicationId = "ir.hamrahak.launcher.prototype"
         minSdk = 28
         targetSdk = 36
-        versionCode = 5
-        versionName = "0.4.0-prototype"
+        versionCode = 6
+        versionName = "0.5.0-prototype"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     buildFeatures { compose = true }

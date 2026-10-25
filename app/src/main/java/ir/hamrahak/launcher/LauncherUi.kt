@@ -68,6 +68,7 @@ fun LauncherApp(model: LauncherViewModel, platform: PlatformActions, homeSignal:
     var callingId by rememberSaveable { mutableStateOf<String?>(null) }
     var reset by rememberSaveable { mutableStateOf(false) }
     var viewingPhoto by rememberSaveable { mutableStateOf<String?>(null) }
+    var dialedNumber by rememberSaveable { mutableStateOf("") }
     var pendingHelpId by rememberSaveable { mutableStateOf<String?>(null) }
     val calling = state.config.contacts.find { it.id == callingId }
     var homeSelected by remember { mutableStateOf(false) }
@@ -104,7 +105,7 @@ fun LauncherApp(model: LauncherViewModel, platform: PlatformActions, homeSignal:
                 if (state.loading) Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
                 } else Column(Modifier.fillMaxSize().safeDrawingPadding()) {
-                    Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 8.dp),
+                    if (screen != "dialer") Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically) {
                         Image(painterResource(R.drawable.ic_launcher), contentDescription = null,
                             modifier = Modifier.size(44.dp))
@@ -128,6 +129,8 @@ fun LauncherApp(model: LauncherViewModel, platform: PlatformActions, homeSignal:
                         }, label = "page-transition") { page ->
                         key(page, state.config.setupComplete) {
                             when (page) {
+                                "dialer" -> DialerScreen(dialedNumber, { dialedNumber = it }, state.config.contacts, state.config.size,
+                                    onHome = { screen = "home" }, onCall = platform::startUserCall, onSystemDial = platform::dial)
                                 "messages" -> SmsScreen(state.config.contacts, state.config.size, onHome = { screen = "home" }, openSystemMessages = platform::messages)
                                 "camera" -> CameraScreen(onHome = { screen = "home" }, onCaptured = { path ->
                                     if (screen == "camera") { viewingPhoto = path; screen = "photo-view" }
@@ -266,7 +269,7 @@ fun LauncherApp(model: LauncherViewModel, platform: PlatformActions, homeSignal:
         }
     }
     val tiles = listOf(
-        Tile("تماس", "phone", platform::dialer),
+        Tile("تماس", "phone", { navigate("dialer") }),
         Tile("خانوادهٔ من", "family", { navigate("family") }),
         Tile("پیام‌ها", "message", { navigate("messages") }),
         Tile("عکس‌ها", "photo", { navigate("photos") }),

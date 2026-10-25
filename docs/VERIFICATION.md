@@ -2,6 +2,28 @@
 
 This record covers the initial discovery prototype only, verified on 25 October 2026. No physical-device or participant acceptance has been completed.
 
+## Version 0.5 verification — 26 October 2026
+
+- Build, Android test APK and lint pass: **0 errors, 6 warnings** (existing version/KTX suggestions).
+- Final instrumentation: **OK (16 tests)** in 32.251 seconds, Android 17/API 37 emulator, system font scale 1.5, animations disabled. The new dialer fixture also selects the largest app text preset.
+- Final keypad-order refinement: the numeric grid uses LTR ordering inside the Persian UI. Both focused dialer tests passed again in 4.055 seconds at 150% system fonts, including a geometric key-order check.
+- New coverage: large keypad input, cancel-before-call, input restoration after activity recreation, deletion, normalized ACTION_CALL/tel data, a single explicitly confirmed dispatch, unsafe input rejection and safe emergency ACTION_DIAL construction.
+- All call/dial intents in the new call-path test are blocked by an Instrumentation ActivityMonitor before a phone activity can start. No call or carrier charge was generated. SMS sends remain fake-transport only; previous fourteen regression cases remain passing.
+- Original grants were CALL_PHONE=false, READ_SMS=true, SEND_SMS=false, CAMERA=true. Test-granted call/send access was revoked; the user's existing read-SMS and camera consent were retained. Font scale restored to 1.0 and animator override removed.
+- Current debug APK versionCode 6 / 0.5.0-prototype; SHA-256 `dafcb40ea5eeca6441376768762761f203b91fe10c3329a20ae94ae47c667fa2`.
+- The app remains installed and open for review. Real SIM/network call behavior and physical devices remain unverified. The existing phone app owns ongoing/incoming call UI and hangup. This change does not remove the SMS store-release blocker.
+
+## Version 0.4 verification — 25 October 2026
+
+- Build, Android tests APK and lint passed. **0 lint errors, 6 warnings** (target/Gradle versions and KTX style suggestions).
+- Final instrumentation: **OK (14 tests)**, 33.074 seconds, Android 17/API 37, font scale 1.5 and animator scale 0. Existing camera, photo, guide, icon, contact and recovery tests remain passing.
+- SMS tests grant restricted runtime permissions on the adb-installed emulator build. A read-only real-provider query succeeded. UI tests use a fake inbox and injected fake transport; **no real SMS or carrier charge was generated**.
+- Verified full-text reading/reply, exact confirmation, cancellation without send, success, failed-draft retention, repeated-submit prevention, journal persistence and duplicate callback handling, partial failure labels, standard Persian/GSM extension boundaries and intact emoji surrogate pairs.
+- A platform `SmsMessage.calculateLength` call unexpectedly required SIM identity access for long Unicode texts on this emulator. It was replaced with standard GSM-7/UTF-16 segmentation; no phone-identity permission was added. A lint-detected API-29-only validity helper was also replaced for API-28 compatibility.
+- Original permission states were READ_SMS=false, SEND_SMS=false, CAMERA=true. After testing, only test-granted SMS access was revoked; camera consent was preserved. Original system font 1.0 and unset animator setting were restored. App data/default SMS application were preserved.
+- VersionCode 5 / 0.4.0-prototype; debug APK SHA-256: `00ebce9f13878a06ce27820d3095b5674cbade1a86f597f0b2f6ce69c919f2f1`.
+- Real SIM transmission/receipt, multi-SIM/operator behavior, other installers, API 28 hardware and store eligibility have not been accepted. This build’s SMS permissions are direct-install experimental functionality, not a Google Play eligible launcher capability. See [SMS_FEATURE.md](SMS_FEATURE.md).
+
 ## Version 0.3 verification — 25 October 2026
 
 - Final build: `:app:assembleDebug :app:assembleDebugAndroidTest :app:lintDebug` succeeded with the existing pinned toolchain and CameraX 1.5.3. Lint: **0 errors, 3 warnings** (API target, Gradle version, and a KTX convenience suggestion).

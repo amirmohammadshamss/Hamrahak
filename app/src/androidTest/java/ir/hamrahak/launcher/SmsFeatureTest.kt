@@ -77,12 +77,13 @@ class SmsFeatureTest {
                 TextMessage(1, 7, "09121234567", "سلام، این یک پیام آزمایشی است", 1000, 1)), false)
         }
         val calls = AtomicInteger()
+        val failNext = java.util.concurrent.atomic.AtomicBoolean(false)
         var sentAddress = ""
         var sentBody = ""
         val transport = object : SmsTransport {
             override fun submit(address: String, body: String, token: String, parts: Int) {
                 sentAddress = address; sentBody = body; calls.incrementAndGet()
-                repeat(parts) { journal.record(token, it, Activity.RESULT_OK) }
+                repeat(parts) { journal.record(token, it, if (failNext.get()) android.telephony.SmsManager.RESULT_ERROR_NO_SERVICE else Activity.RESULT_OK) }
             }
         }
         val owner = ViewModelStore()
@@ -112,6 +113,16 @@ class SmsFeatureTest {
             assertEquals("+989121234567", sentAddress)
             assertEquals("پاسخ آزمایشی", sentBody)
             compose.onNodeWithText("پیامک ارسال شد.").assertIsDisplayed()
+            failNext.set(true)
+            compose.runOnIdle {
+                vm.draft(recipient = "09121234567", text = "این پیش‌نویس باید بماند")
+                vm.sendConfirmed("09121234567", "این پیش‌نویس باید بماند")
+                vm.sendConfirmed("09121234567", "این پیش‌نویس باید بماند")
+            }
+            compose.waitUntil(5_000) { vm.state.value.report?.failed == true && !vm.state.value.submitting }
+            assertEquals("این پیش‌نویس باید بماند", vm.state.value.draft)
+            assertEquals(2, calls.get())
+            compose.onNodeWithText("ارسال پیامک ناموفق بود.").assertIsDisplayed()
         } finally { owner.clear(); app.deleteSharedPreferences(name) }
     }
 }
