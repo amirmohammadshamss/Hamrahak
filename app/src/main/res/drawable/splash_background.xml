@@ -1,0 +1,4 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/warm_paper" />
+    <item android:drawable="@drawable/ic_launcher" android:width="112dp" android:height="112dp" android:gravity="center" />
+</layer-list>

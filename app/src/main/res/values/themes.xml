@@ -1,0 +1,14 @@
+<resources>
+    <style name="Theme.Hamrahak" parent="android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:fontFamily">@font/vazirmatn</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:statusBarColor">@color/warm_paper</item>
+        <item name="android:navigationBarColor">@color/warm_paper</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:windowActionModeOverlay">true</item>
+        <item name="android:windowBackground">@color/warm_paper</item>
+    </style>
+    <style name="Theme.Hamrahak.Starting" parent="Theme.Hamrahak">
+        <item name="android:windowBackground">@drawable/splash_background</item>
+    </style>
+</resources>
