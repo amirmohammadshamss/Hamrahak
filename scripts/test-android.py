@@ -11,7 +11,7 @@ import sys
 import time
 
 ROOT = Path(__file__).resolve().parents[1]
-PACKAGE = "ir.rosheno.launcher.prototype"
+PACKAGE = "ir.rosheno.launcher"
 TEST_PACKAGE = PACKAGE + ".test"
 DENIED = ["ir.rosheno.launcher.ContactsPermissionDeniedTest", "ir.rosheno.launcher.NoPermissionFeaturesTest"]
 PERMISSIONS = ["CAMERA", "CALL_PHONE", "READ_CONTACTS", "WRITE_CONTACTS", "READ_SMS", "SEND_SMS"]

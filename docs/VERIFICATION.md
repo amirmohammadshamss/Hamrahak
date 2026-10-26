@@ -119,3 +119,9 @@ Added GitHub Actions configuration for API 28 and API 37 (large text), with reta
 Built :app:assembleRelease and :app:lintRelease successfully with the local RSA-4096 key. Release lint: 0 errors, 6 existing warnings. apksigner verifies the APK signature (v3, supported by the minimum API 28), its signer certificate matches the exported public certificate, and zipalign -c -P 16 4 passes. No keystore, private properties or signing Markdown are packaged in the APK. SHA-256: 7a46457e954ebb682cda319a343d38a01e91185e5bc880cab883fbda55c3883d.
 
 The real key/password Markdown and properties are local Git-ignored files with restricted access. A debug build succeeds with an absent alternate signing properties file; release credential validation rejects absent credentials. The signed release was not installed over the existing debug installation and no installed app/data was deleted.
+
+## Application ID finalized: ir.rosheno.launcher
+
+Changed applicationId from the earlier prototype identifier to ir.rosheno.launcher; namespace/activity package already matched. Updated the emulator runner and current release/build documentation. Built signed release APK and AAB, debug/test APKs, and release lint successfully. The final release APK and the base APK regenerated from the AAB/BIN both declare ir.rosheno.launcher. Signing uses the existing release certificate. Regenerated Bazaar BIN for the new AAB and verified all 87 generated APK signatures against that certificate. Earlier artifacts are archived under ignored build/outputs/archive/. The new AAB and BIN are a pair and must replace the previous pair together.
+
+Android 17 regression: 5 denied-permission tests passed (9.329s) and 36 remaining tests passed (47.909s); runner restoration errors: zero. Two host-side runner checks passed. Metadata/checksums are in ignored build/outputs/bazaar/ir.rosheno.launcher/verification.json and private signing/RELEASE_SIGNING.md.

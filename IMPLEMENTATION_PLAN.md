@@ -28,7 +28,7 @@ Recommended interpretations to confirm during discovery:
 - **Count taps per journey.** The RFP's Family → contact → confirmation path exceeds its general one-to-two-tap goal. Keep confirmation for error prevention; compare direct home photo shortcuts with the Family screen during prototype testing and agree a measurable task-specific target.
 - **Family assistance is local and consent-based.** The PIN protects in-app configuration against accidental changes. App filtering does not enforce a device-wide block. Exit instructions remain accessible, including when the PIN is forgotten.
 - **No backend, registration, ads, or paid upgrade implementation in MVP.** Research willingness to pay without delaying core usability work.
-- **Naming:** The product name is روشنو | Rosheno. The prototype namespace is `ir.rosheno.launcher` and application ID is `ir.rosheno.launcher.prototype`. Confirm publishing ownership before signing a distributed build.
+- **Naming:** The product name is روشنو | Rosheno. The prototype namespace is `ir.rosheno.launcher` and application ID is `ir.rosheno.launcher`. Confirm publishing ownership before signing a distributed build.
 
 ## 2. Delivery sequence
 

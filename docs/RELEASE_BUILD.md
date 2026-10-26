@@ -26,6 +26,6 @@ apksigner verify --verbose --print-certs app/build/outputs/apk/release/app-relea
 zipalign -c -P 16 4 app/build/outputs/apk/release/app-release.apk
 ```
 
-The generated release uses the current prototype application ID `ir.rosheno.launcher.prototype`, version 0.7.0-prototype (code 8). This release key differs from the SDK debug key; an APK signed by it cannot update an existing debug-signed installation under the same application ID. No installed app was removed or replaced during signing.
+The generated release uses the current prototype application ID `ir.rosheno.launcher`, version 0.7.0-prototype (code 8). This release key differs from the SDK debug key; an APK signed by it cannot update an existing debug-signed installation under the same application ID. No installed app was removed or replaced during signing.
 
 This task creates a locally signed APK and does not publish it or enroll a Play account. Store eligibility constraints described in SMS_FEATURE.md remain separate.

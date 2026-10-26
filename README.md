@@ -16,7 +16,7 @@ Requires JDK 17, Android SDK platform 37, and Android Studio or command-line And
 ./gradlew :app:assembleDebug
 ```
 
-Debug APK: `app/build/outputs/apk/debug/app-debug.apk`. Install with `adb install -r app/build/outputs/apk/debug/app-debug.apk` or Android Studio. Minimum Android 9 (API 28); target API 36. The provisional prototype ID is `ir.rosheno.launcher.prototype`, separate from any future production ID.
+Debug APK: `app/build/outputs/apk/debug/app-debug.apk`. Install with `adb install -r app/build/outputs/apk/debug/app-debug.apk` or Android Studio. Minimum Android 9 (API 28); target API 36. The application ID is `ir.rosheno.launcher`.
 
 The build uses AGP 9.1.1 (built-in Kotlin), Kotlin Compose plugin 2.2.10, and pinned Compose BOM 2026.03.00. These versions match the validated local toolchain; upgrade dependencies deliberately after the prototype gate.
 

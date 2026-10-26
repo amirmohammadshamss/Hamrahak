@@ -14,7 +14,7 @@ android {
     namespace = "ir.rosheno.launcher"
     compileSdk = 37
     defaultConfig {
-        applicationId = "ir.rosheno.launcher.prototype"
+        applicationId = "ir.rosheno.launcher"
         minSdk = 28
         targetSdk = 36
         versionCode = 8
