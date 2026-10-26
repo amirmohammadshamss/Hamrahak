@@ -28,7 +28,7 @@ Current version: **0.7.0 prototype**. All device contacts are available from the
 - Customizable six-to-eight main actions and clearer app aliases validated with participants.
 - Dedicated accessibility audit: TalkBack, focus order, touch targets, contrast, mixed direction numbers, system font scaling.
 - Six physical devices / three manufacturers, Android 9 and current OS testing, performance and battery measurements, pilot stability evidence.
-- Approved naming, production identity/signing custody, privacy policy/legal ownership, Figma components, store assets, signed release APK/AAB, handover and support agreement.
+- Approved naming, production identity/signing custody, privacy policy/legal ownership, Figma components, store assets, store-approved APK/AAB, handover and support agreement.
 
 ## External discovery inputs still needed
 
@@ -73,3 +73,5 @@ P1/P2 remain outside this prototype: Ultra-simple mode, reminders, voice command
 - Illustrated manual-call instructions were added. Actual SIM call success/quality remains unverified; tests block the phone intents before dispatch to a phone activity.
 
 Automated regression coverage now includes 41 instrumented tests plus two runner checks. The complete suite passes on Android 17 at normal and 150% system text size. The ordered runner restores temporary permissions/display settings and saves phase logs/JSON summaries. GitHub Actions is configured for API 28/API 37; hosted execution remains pending. See [automated testing](AUTOMATED_TESTS.md).
+
+A local RSA-4096 release key and signed APK have been generated. Private key/password details are in the ignored signing/ directory and release.properties. See [release build](RELEASE_BUILD.md). Local signing does not constitute store publication or production acceptance.

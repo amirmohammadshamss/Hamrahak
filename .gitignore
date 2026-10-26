@@ -9,3 +9,6 @@ release.properties
 
 
 __pycache__/
+
+# Local release signing key and private credentials
+signing/

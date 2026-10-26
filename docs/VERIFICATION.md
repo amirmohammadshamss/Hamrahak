@@ -113,3 +113,9 @@ Added 19 instrumented tests, expanding the suite from 22 to 41, plus two host-si
 On Android 17/API 37 emulator-5554, the new runner completed build/lint and both ordered phases at default font size: 5 denied tests (9.153s) + 36 feature tests (44.665s). At 150% system text size: 5 denied tests (8.993s) + 36 feature tests (46.27s). Both summaries report success, 41 tests and zero restoration errors. Two host-side result-parser tests passed. Lint remains 0 errors, 6 existing warnings. No actual calls or carrier SMS were sent; synthetic contacts/camera files were cleaned up.
 
 Added GitHub Actions configuration for API 28 and API 37 (large text), with retained reports. Workflow YAML parses locally; hosted CI and API 28 execution remain pending a push. Commands and feature-by-feature scope are in AUTOMATED_TESTS.md.
+
+## Local release signing
+
+Built :app:assembleRelease and :app:lintRelease successfully with the local RSA-4096 key. Release lint: 0 errors, 6 existing warnings. apksigner verifies the APK signature (v3, supported by the minimum API 28), its signer certificate matches the exported public certificate, and zipalign -c -P 16 4 passes. No keystore, private properties or signing Markdown are packaged in the APK. SHA-256: 7a46457e954ebb682cda319a343d38a01e91185e5bc880cab883fbda55c3883d.
+
+The real key/password Markdown and properties are local Git-ignored files with restricted access. A debug build succeeds with an absent alternate signing properties file; release credential validation rejects absent credentials. The signed release was not installed over the existing debug installation and no installed app/data was deleted.

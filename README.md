@@ -64,7 +64,7 @@ Single app module: Compose UI → ViewModel/StateFlow → local ConfigStore; Pla
 
 Not yet implemented: store-eligible SMS handler/release approval (0.4 is direct-install only), contact import, configurable primary home actions, family PIN, production storage migrations, validated full TalkBack behavior, and manufacturer-specific recovery instructions. The current home has six fixed primary tiles plus help; favorite apps are configurable. No claims of measured usability, crash-free rate, physical-device coverage, or production readiness are made.
 
-The product display name is روشنو | Rosheno. Package ownership, signing keys, store accounts, Figma handoff, and participant recruitment remain open. The release build has no production signing configuration. Do not use this prototype as an emergency response system.
+The product display name is روشنو | Rosheno. Publishing ownership, store accounts, Figma handoff, and participant recruitment remain open. Local release signing is configured; see [release build](docs/RELEASE_BUILD.md). Do not use this prototype as an emergency response system.
 
 ### Phone contacts
 

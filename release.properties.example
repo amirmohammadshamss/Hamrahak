@@ -1,0 +1,5 @@
+# Copy to release.properties (ignored by Git) and fill in local signing values.
+storeFile=signing/rosheno-release.jks
+storePassword=REPLACE_WITH_LOCAL_STORE_PASSWORD
+keyAlias=rosheno-release
+keyPassword=REPLACE_WITH_LOCAL_KEY_PASSWORD
