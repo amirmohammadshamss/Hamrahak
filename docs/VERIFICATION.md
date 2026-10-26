@@ -81,3 +81,7 @@ The initial UI run exposed an Espresso 3.5.0 incompatibility with Android 17; pi
 ## Still required before acceptance
 
 Actual dialer and photo-provider behavior on Android 9 and multiple manufacturers, consent-based Home role and reboot recovery, TalkBack audit, six physical devices, 15-participant usability acceptance, pilot stability/performance/battery metrics, signing and store review.
+
+## Contacts feature — 0.6.0
+
+Debug APK and test APK built successfully. Lint: 0 errors, 6 existing warnings. Two focused Android 17 emulator tests passed (4.275s): read-only device Contacts Provider query and fixture-based contacts UI covering search, contacts without numbers, number selection, cancel/confirm call callbacks, and ACTION_INSERT creation intent. No real calls or contact writes occurred. Temporary READ_CONTACTS/CALL_PHONE grants were revoked after testing. Device-editor save/return behavior still needs physical-device acceptance.

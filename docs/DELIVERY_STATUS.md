@@ -2,7 +2,7 @@
 
 Milestone: discovery prototype. Gate A is pending real participant evidence.
 
-Current version: **0.5.0 prototype**. Build/lint succeed (zero errors, six style/toolchain warnings). Sixteen tests pass on Android 17 at 150% system font scale with animations disabled. Manual dialing is now inside the launcher and confirmed calls use Android Telecom through the existing phone app. Call intents are intercepted in tests; no real call/SMS was sent. Existing SMS publication constraints still apply. See [dialer](DIALER_FEATURE.md), [verification](VERIFICATION.md) and [SMS constraints](SMS_FEATURE.md). Physical-device and participant acceptance remain pending.
+Current version: **0.6.0 prototype**. All device contacts are available from the new Contacts tile, with search, multi-number selection, confirmed calling, and Android contact creation. See [contacts](CONTACTS_FEATURE.md). Build/lint succeed (zero errors, six style/toolchain warnings). Sixteen tests pass on Android 17 at 150% system font scale with animations disabled. Manual dialing is now inside the launcher and confirmed calls use Android Telecom through the existing phone app. Call intents are intercepted in tests; no real call/SMS was sent. Existing SMS publication constraints still apply. See [dialer](DIALER_FEATURE.md), [verification](VERIFICATION.md) and [SMS constraints](SMS_FEATURE.md). Physical-device and participant acceptance remain pending.
 
 ## Implemented for evaluation
 

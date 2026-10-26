@@ -62,3 +62,7 @@ Single app module: Compose UI → ViewModel/StateFlow → local ConfigStore; Pla
 Not yet implemented: store-eligible SMS handler/release approval (0.4 is direct-install only), contact import, configurable primary home actions, family PIN, production storage migrations, validated full TalkBack behavior, and manufacturer-specific recovery instructions. The current home has six fixed primary tiles plus help; favorite apps are configurable. No claims of measured usability, crash-free rate, physical-device coverage, or production readiness are made.
 
 The working display name is همراهک. Final product naming, package ownership, signing keys, store accounts, Figma handoff, and participant recruitment remain open. The release build has no production signing configuration. Do not use this prototype as an emergency response system.
+
+### Phone contacts
+
+The **مخاطبین** home tile shows all phone contacts after READ_CONTACTS permission, supports name/number search and confirmed calling, and opens Android’s contact editor to create a saved contact. The list refreshes on return and provider changes. Family favorites remain separately configurable. See [contacts details](docs/CONTACTS_FEATURE.md).

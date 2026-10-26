@@ -131,6 +131,8 @@ fun LauncherApp(model: LauncherViewModel, platform: PlatformActions, homeSignal:
                             when (page) {
                                 "dialer" -> DialerScreen(dialedNumber, { dialedNumber = it }, state.config.contacts, state.config.size,
                                     onHome = { screen = "home" }, onCall = platform::startUserCall, onSystemDial = platform::dial)
+                                "contacts" -> PhoneContactsScreen(resumed, state.config.size, onHome = { screen = "home" },
+                                    onCall = platform::startUserCall, open = platform::open)
                                 "messages" -> SmsScreen(state.config.contacts, state.config.size, onHome = { screen = "home" }, openSystemMessages = platform::messages)
                                 "camera" -> CameraScreen(onHome = { screen = "home" }, onCaptured = { path ->
                                     if (screen == "camera") { viewingPhoto = path; screen = "photo-view" }
@@ -270,6 +272,7 @@ fun LauncherApp(model: LauncherViewModel, platform: PlatformActions, homeSignal:
     }
     val tiles = listOf(
         Tile("تماس", "phone", { navigate("dialer") }),
+        Tile("مخاطبین", "family", { navigate("contacts") }),
         Tile("خانوادهٔ من", "family", { navigate("family") }),
         Tile("پیام‌ها", "message", { navigate("messages") }),
         Tile("عکس‌ها", "photo", { navigate("photos") }),
