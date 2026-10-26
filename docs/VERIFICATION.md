@@ -105,3 +105,11 @@ Debug app/test builds and lint passed (0 errors, 6 existing warnings). Two hardw
 Renamed Gradle project to Rosheno, Kotlin namespace/source directories to ir.rosheno.launcher, prototype application ID to ir.rosheno.launcher.prototype, resource/Compose themes to Rosheno, internal SMS action/URI namespace, UI branding, test references and documentation. Display label in the built APK is روشنو | Rosheno. Source/document text scan reports no former brand references outside ignored build/cache/Git artifacts. Existing source RFP and historical screenshot binaries are retained as reference artifacts. A different application ID is a separate Android installation; existing installation data and default-Home selection do not transfer automatically. Debug app/test APK builds and lint passed.
 
 Renamed-package validation: permission-denied regression passed separately (1 test, 1.361s), then all remaining tests passed (21 tests, 46.385s). Runtime grants introduced by tests were revoked on the new installation. No actual call or carrier SMS was sent.
+
+## Expanded automated feature suite
+
+Added 19 instrumented tests, expanding the suite from 22 to 41, plus two host-side runner checks. New coverage includes isolated settings/reset/storage recovery, contact/favorite limits, app-launch handoffs, denied camera/SMS/call/contact-write access, all guide topics, and SMS failure/retry/pending/draft/journal behavior. Test-only settings storage is isolated from installation preferences/files.
+
+On Android 17/API 37 emulator-5554, the new runner completed build/lint and both ordered phases at default font size: 5 denied tests (9.153s) + 36 feature tests (44.665s). At 150% system text size: 5 denied tests (8.993s) + 36 feature tests (46.27s). Both summaries report success, 41 tests and zero restoration errors. Two host-side result-parser tests passed. Lint remains 0 errors, 6 existing warnings. No actual calls or carrier SMS were sent; synthetic contacts/camera files were cleaned up.
+
+Added GitHub Actions configuration for API 28 and API 37 (large text), with retained reports. Workflow YAML parses locally; hosted CI and API 28 execution remain pending a push. Commands and feature-by-feature scope are in AUTOMATED_TESTS.md.

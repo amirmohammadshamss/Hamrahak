@@ -1,0 +1,65 @@
+name: Android feature tests
+
+'on':
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-tests-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  features:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - api: 28
+            extra: ''
+          - api: 37
+            extra: '--large-text'
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+      - uses: android-actions/setup-android@v4
+        with:
+          packages: 'platform-tools platforms;android-37 build-tools;36.0.0'
+      - name: Check runner failure detection
+        run: python3 -m unittest discover -s scripts -p '*_test.py'
+      - name: Build test APKs and lint
+        run: ./gradlew :app:assembleDebug :app:assembleDebugAndroidTest :app:lintDebug --console=plain
+      - name: Enable hardware virtualization
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Run denied-permission and feature suites
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api }}
+          target: google_apis
+          arch: x86_64
+          profile: pixel_2
+          emulator-options: -no-window -no-snapshot -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back emulated -camera-front emulated
+          disable-animations: false
+          script: python3 scripts/test-android.py --serial emulator-5554 --skip-build ${{ matrix.extra }}
+      - name: Keep test and lint reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: android-tests-api-${{ matrix.api }}
+          path: app/build/reports/
+          if-no-files-found: warn
+          retention-days: 7

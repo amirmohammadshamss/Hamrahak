@@ -38,20 +38,23 @@ Other launched applications retain their own interfaces. Messages now opens an i
 
 ## Verify
 
-On a dedicated clean emulator/test install:
+Start a dedicated emulator with JDK 17 and the Android SDK configured, then run:
 
 ```sh
-./gradlew :app:lintDebug :app:assembleDebug
-./gradlew :app:connectedDebugAndroidTest
+python3 -m unittest discover -s scripts -p '*_test.py'
+python3 scripts/test-android.py --serial emulator-5554
+python3 scripts/test-android.py --serial emulator-5554 --skip-build --large-text
 ```
 
-Use a dedicated emulator or test installation. The UI test temporarily saves a fresh configuration and restores the original afterward. Instrumentation covers phone-number normalization, rejecting service/URI commands, configuration persistence, safe photo staging/cleanup, edit/cancel/reorder with activity recreation, and the setup → contact → confirmation → Home → favorite-app journey. Tests do not place calls or change the Home role. Camera tests grant camera access, capture an emulator test frame, and delete their generated images. SMS tests grant READ_SMS/SEND_SMS; send actions use a fake transport and never contact a recipient. Restore the device’s original permission states after testing. Use a dedicated emulator. To retain installed APKs and app data after testing, build/install both APKs and run `adb shell am instrument -w ir.rosheno.launcher.prototype.test/androidx.test.runner.AndroidJUnitRunner` instead of the Gradle connected task, which may uninstall test apps afterward. Espresso 3.7.0 is pinned explicitly because the Compose test dependency's older transitive version uses an input API removed in Android 17.
+The runner builds the app and test APKs, runs lint, installs both, tests denied permissions before granted-permission features, and restores the original runtime grants and animation/font settings even on failure. It rejects physical-device serials. Use `--adb /path/to/adb`, `--offline`, or `--gradle-init-script /path/to/init.gradle` when needed. Phase logs and a machine-readable summary are saved under `app/build/reports/feature-tests/`.
 
-See [verification record](docs/VERIFICATION.md), [research protocol](docs/RESEARCH_PROTOCOL.md), and [delivery status](docs/DELIVERY_STATUS.md).
+Tests cover the current app features, including setup, family CRUD/help, device contacts, in-app contact creation, dialing, app shortcuts, camera/gallery, every illustrated guide, SMS, settings/reset/recovery, branding at startup, and hardware Back. Phone intents are intercepted, SMS sends use fake transports, contact fixtures are removed, and reset/storage-damage tests use isolated files/preferences.
+
+The [Android test workflow](.github/workflows/android-tests.yml) runs on pushes, pull requests and manual dispatch with API 28 and API 37 emulators; API 37 uses 150% text size. Reports are retained as CI artifacts. See [test coverage and commands](docs/AUTOMATED_TESTS.md) and the [verification record](docs/VERIFICATION.md).
 
 Version 0.3 introduced bundled Vazirmatn Persian typography, an adaptive house-and-heart icon (including a themed monochrome version), native launch branding, a skippable 550ms brand entrance for manual cold launches, finite page fades, and tile press feedback. Home-key returns skip the brand entrance, and motion honors Android’s animation setting. Font copyright/license is included in the APK and in [Vazirmatn-OFL.txt](docs/licenses/Vazirmatn-OFL.txt).
 
-The version 0.5 regression has **16 passing tests** at 150% system font scaling with animations disabled. Lint reports zero errors and three nonblocking warnings. Tests include a real emulator-camera capture → preview → Home → gallery → preview → Home journey, actual app icon loading, help selection/dialer-intent verification, and illustrated tutorial navigation. No real calls or carrier SMS are sent by the tests. Dialer tests intercept all phone intents before Android can open a phone activity and verify cancellation, keypad input, recreation, deletion and exact confirmed dispatch. Restore original CALL_PHONE/READ_SMS/SEND_SMS/CAMERA grants after testing. The SMS tests additionally cover a read-only query of the real provider, fake-inbox replies, cancel-before-send, successful/failed callbacks, failed-draft retention, repeated-submit protection and Persian/emoji multipart boundaries.
+The automated suite currently contains 41 instrumented tests and two host-side checks for test-result parsing. Lint reports zero errors and six existing warnings. See the verification record for executed environments and results.
 
 [View the new splash screen](docs/screenshots/prototype-splash-v0.3.png) and [illustrated guide](docs/screenshots/prototype-guide-v0.3.png).
 

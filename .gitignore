@@ -7,3 +7,5 @@ local.properties
 release.properties
 .DS_Store
 
+
+__pycache__/

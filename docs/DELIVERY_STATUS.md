@@ -71,3 +71,5 @@ P1/P2 remain outside this prototype: Ultra-simple mode, reminders, voice command
 - Known/platform-recognized emergency numbers use the system dialer. Ordinary confirmed numbers use ACTION_CALL; no call-log/identity/audio permissions or default phone-role takeover were added.
 - Connected/incoming call screens, SIM/network handling and hangup remain controlled by the existing phone application. Photo-contact/help handoffs are unchanged.
 - Illustrated manual-call instructions were added. Actual SIM call success/quality remains unverified; tests block the phone intents before dispatch to a phone activity.
+
+Automated regression coverage now includes 41 instrumented tests plus two runner checks. The complete suite passes on Android 17 at normal and 150% system text size. The ordered runner restores temporary permissions/display settings and saves phase logs/JSON summaries. GitHub Actions is configured for API 28/API 37; hosted execution remains pending. See [automated testing](AUTOMATED_TESTS.md).
