@@ -1,4 +1,4 @@
-package ir.hamrahak.launcher
+package ir.rosheno.launcher
 
 import android.content.ComponentName
 import java.util.UUID

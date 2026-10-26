@@ -1,4 +1,4 @@
-package ir.hamrahak.launcher
+package ir.rosheno.launcher
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -44,7 +44,7 @@ fun DialerScreen(number: String, onNumberChange: (String) -> Unit, contacts: Lis
     Column(Modifier.fillMaxSize().imePadding().padding(horizontal = 20.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)) {
         Button(onClick = onHome, modifier = Modifier.fillMaxWidth().heightIn(min = 64.dp)) {
-            Text("بازگشت به همراهک", fontSize = 22.sp)
+            Text("بازگشت به روشنو", fontSize = 22.sp)
         }
         Text("شماره‌گیر", fontSize = textSize.sp, fontWeight = FontWeight.Bold)
         OutlinedTextField(number, { onNumberChange(it.take(32)) }, label = { Text("شمارهٔ تلفن") },

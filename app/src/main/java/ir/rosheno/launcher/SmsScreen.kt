@@ -1,4 +1,4 @@
-package ir.hamrahak.launcher
+package ir.rosheno.launcher
 
 import android.Manifest
 import androidx.activity.compose.BackHandler
@@ -38,6 +38,7 @@ fun SmsScreen(contacts: List<FamilyContact>, size: Int, onHome: () -> Unit, open
     val context = LocalContext.current
     val owner = LocalLifecycleOwner.current
     var mode by rememberSaveable { mutableStateOf("inbox") }
+    var composeOrigin by rememberSaveable { mutableStateOf("inbox") }
     var threadId by rememberSaveable { mutableStateOf<Long?>(null) }
     var confirmationAddress by rememberSaveable { mutableStateOf<String?>(null) }
     var confirmationBody by rememberSaveable { mutableStateOf("") }
@@ -68,7 +69,7 @@ fun SmsScreen(contacts: List<FamilyContact>, size: Int, onHome: () -> Unit, open
         owner.lifecycle.addObserver(listener)
         onDispose { owner.lifecycle.removeObserver(listener); vm.stop() }
     }
-    BackHandler(mode != "inbox") { mode = "inbox" }
+    BackHandler(mode != "inbox") { mode = if (mode == "compose") composeOrigin else "inbox" }
     val threads = remember(state.messages) { messageThreads(state.messages) }
     val thread = threads.find { it.id == threadId }
     fun sender(address: String): String = contacts.find {
@@ -78,7 +79,7 @@ fun SmsScreen(contacts: List<FamilyContact>, size: Int, onHome: () -> Unit, open
     Column(Modifier.fillMaxSize().imePadding().padding(horizontal = 20.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Button(onClick = onHome, modifier = Modifier.fillMaxWidth().heightIn(min = 64.dp)) {
-            Text("بازگشت به همراهک", fontSize = 22.sp)
+            Text("بازگشت به روشنو", fontSize = 22.sp)
         }
         Text(if (mode == "compose") "نوشتن پیامک" else if (mode == "thread") thread?.let { sender(it.address) } ?: "گفت‌وگو" else "پیامک‌ها",
             fontSize = textSize.sp, fontWeight = FontWeight.Bold)
@@ -111,6 +112,7 @@ fun SmsScreen(contacts: List<FamilyContact>, size: Int, onHome: () -> Unit, open
             }
         } else {
             Button(onClick = {
+                composeOrigin = mode
                 val address = if (mode == "thread") thread?.address else null
                 if (address != null && state.draft.isNotBlank() && comparableSmsAddress(address) != comparableSmsAddress(state.recipient)) replaceDraftFor = address
                 else { if (address != null) vm.draft(recipient = address); mode = "compose" }
@@ -129,7 +131,7 @@ fun SmsScreen(contacts: List<FamilyContact>, size: Int, onHome: () -> Unit, open
                     TextButton(onClick = {
                         runCatching { context.startActivity(android.content.Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
                             android.net.Uri.fromParts("package", context.packageName, null))) }
-                            .onFailure { vm.error("از تنظیمات گوشی، اجازهٔ پیامک همراهک را بررسی کنید.") }
+                            .onFailure { vm.error("از تنظیمات گوشی، اجازهٔ پیامک روشنو را بررسی کنید.") }
                     }) { Text("تنظیم اجازهٔ پیامک", fontSize = 18.sp) }
                 }
             } else {

@@ -1,4 +1,4 @@
-package ir.hamrahak.launcher
+package ir.rosheno.launcher
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.size

@@ -51,7 +51,7 @@ P1/P2 remain outside this prototype: Ultra-simple mode, reminders, voice command
 - New green/cream visual system, bundled Vazirmatn font and OFL notice, adaptive/themed app icon, native splash branding, and a short skippable animated welcome for manual cold launches. Home launches bypass the welcome.
 - Page fade/slide and press feedback, with system animation preferences respected.
 - Actual installed-app icons in the directory and favorites.
-- In-app CameraX camera, private photo library, selected-photo viewer, and a persistent «بازگشت به همراهک» action. Camera permission is deferred until requested inside the feature.
+- In-app CameraX camera, private photo library, selected-photo viewer, and a persistent «بازگشت به روشنو» action. Camera permission is deferred until requested inside the feature.
 - User-requested camera/photo screens supersede the original plan’s external-camera/gallery handoff for these two functions. Original messaging and other app shortcuts still use system intents.
 - Captured photos are app-private, preserved by launcher-settings reset, and removed by app uninstall. Export/share and comprehensive photo retention controls remain future work.
 

@@ -1,4 +1,4 @@
-package ir.hamrahak.launcher
+package ir.rosheno.launcher
 
 import android.content.Context
 import android.graphics.Bitmap

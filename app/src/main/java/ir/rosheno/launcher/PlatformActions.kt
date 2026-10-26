@@ -1,4 +1,4 @@
-package ir.hamrahak.launcher
+package ir.rosheno.launcher
 
 import android.app.Activity
 import android.app.role.RoleManager
@@ -24,7 +24,7 @@ class PlatformActions(
             val manager = activity.getSystemService(RoleManager::class.java)
             if (manager.isRoleAvailable(RoleManager.ROLE_HOME)) {
                 if (manager.isRoleHeld(RoleManager.ROLE_HOME)) {
-                    report("همراهک اکنون صفحهٔ اصلی گوشی شماست.")
+                    report("روشنو اکنون صفحهٔ اصلی گوشی شماست.")
                 // RequestRoleActivity needs a caller/result token to identify this package.
                 } else requestRole(manager.createRequestRoleIntent(RoleManager.ROLE_HOME))
                 return

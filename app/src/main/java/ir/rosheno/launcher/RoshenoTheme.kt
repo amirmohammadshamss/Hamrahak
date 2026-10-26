@@ -1,4 +1,4 @@
-package ir.hamrahak.launcher
+package ir.rosheno.launcher
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -41,7 +41,7 @@ private val PersianTypography = Typography(
 )
 
 @Composable
-fun HamrahTheme(content: @Composable () -> Unit) {
+fun RoshenoTheme(content: @Composable () -> Unit) {
     MaterialTheme(
         colorScheme = lightColorScheme(
             primary = Green, onPrimary = Color.White, background = Paper, onBackground = Ink,

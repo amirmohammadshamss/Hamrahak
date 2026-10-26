@@ -1,4 +1,4 @@
-package ir.hamrahak.launcher
+package ir.rosheno.launcher
 
 import android.Manifest
 import android.content.Context
@@ -28,7 +28,7 @@ class PhotoAndGuideTest {
         try {
             compose.waitUntil(10_000) { compose.onAllNodes(hasText("کمک می‌خواهم")).fetchSemanticsNodes().isNotEmpty() }
             compose.onNodeWithText("دوربین").performScrollTo().performClick()
-            compose.onNodeWithText("بازگشت به همراهک").assertIsDisplayed()
+            compose.onNodeWithText("بازگشت به روشنو").assertIsDisplayed()
             compose.waitUntil(30_000) {
                 compose.onAllNodes(hasTestTag("camera-shutter") and isEnabled()).fetchSemanticsNodes().isNotEmpty()
             }
@@ -41,13 +41,13 @@ class PhotoAndGuideTest {
             val captured = context.filesDir.resolve("captures").listFiles().orEmpty().filter { it.name !in before }
             assertEquals(1, captured.size)
             assertTrue(captured.single().length() > 0)
-            compose.onNodeWithText("بازگشت به همراهک").performClick()
+            compose.onNodeWithText("بازگشت به روشنو").performClick()
             compose.onNodeWithText("کمک می‌خواهم").assertIsDisplayed()
             compose.onNodeWithText("عکس‌ها").performScrollTo().performClick()
             compose.waitUntil(5_000) { compose.onAllNodes(hasContentDescription("عکس ذخیره‌شده")).fetchSemanticsNodes().isNotEmpty() }
             compose.onAllNodesWithContentDescription("عکس ذخیره‌شده").onFirst().performScrollTo().performClick()
-            compose.onNodeWithText("بازگشت به همراهک").assertIsDisplayed()
-            compose.onNodeWithText("بازگشت به همراهک").performClick()
+            compose.onNodeWithText("بازگشت به روشنو").assertIsDisplayed()
+            compose.onNodeWithText("بازگشت به روشنو").performClick()
             compose.onNodeWithText("کمک می‌خواهم").assertIsDisplayed()
         } finally {
             scenario.close()
@@ -70,7 +70,7 @@ class PhotoAndGuideTest {
             compose.onNodeWithText("مرحلهٔ بعد").performScrollTo().performClick()
             compose.onNodeWithText("عکس بگیرید").performScrollTo().assertIsDisplayed()
             compose.onNodeWithText("مرحلهٔ بعد").performScrollTo().performClick()
-            compose.onNodeWithText("به همراهک برگردید").performScrollTo().assertIsDisplayed()
+            compose.onNodeWithText("به روشنو برگردید").performScrollTo().assertIsDisplayed()
             compose.onNodeWithText("خانه").performClick()
             compose.onNodeWithText("کمک می‌خواهم").assertIsDisplayed()
         } finally { scenario.close(); store.save(original) }

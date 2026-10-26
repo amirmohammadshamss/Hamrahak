@@ -1,4 +1,4 @@
-package ir.hamrahak.launcher
+package ir.rosheno.launcher
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -41,7 +41,7 @@ import java.util.UUID
 
 @Composable private fun ReturnHome(onHome: () -> Unit) {
     Button(onClick = onHome, modifier = Modifier.fillMaxWidth().heightIn(min = 64.dp)) {
-        Text("بازگشت به همراهک", fontSize = 22.sp)
+        Text("بازگشت به روشنو", fontSize = 22.sp)
     }
 }
 
@@ -73,7 +73,7 @@ fun CameraScreen(onHome: () -> Unit, onCaptured: (String) -> Unit) {
                 preview = livePreview
                 provider!!.bindToLifecycle(owner, selector, livePreview, capture)
                 ready = true
-            } catch (_: Exception) { error = "دوربین در دسترس نیست. می‌توانید به همراهک برگردید و دوباره تلاش کنید." }
+            } catch (_: Exception) { error = "دوربین در دسترس نیست. می‌توانید به روشنو برگردید و دوباره تلاش کنید." }
         }, ContextCompat.getMainExecutor(context))
         onDispose {
             disposed = true
@@ -138,7 +138,7 @@ fun PhotoLibraryScreen(onHome: () -> Unit, onCamera: () -> Unit, onPhoto: (Strin
             if (photos == null) CircularProgressIndicator()
             else if (photos!!.isEmpty()) {
                 LauncherIcon("photo", Green)
-                Text("عکس‌هایی که با همراهک می‌گیرید اینجا دیده می‌شوند.", fontSize = 22.sp)
+                Text("عکس‌هایی که با روشنو می‌گیرید اینجا دیده می‌شوند.", fontSize = 22.sp)
             }
             photos.orEmpty().chunked(2).forEach { row -> Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 row.forEach { file -> Surface(onClick = { onPhoto(file.absolutePath) }, shape = RoundedCornerShape(20.dp),

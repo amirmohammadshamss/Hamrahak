@@ -1,4 +1,4 @@
-package ir.hamrahak.launcher
+package ir.rosheno.launcher
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

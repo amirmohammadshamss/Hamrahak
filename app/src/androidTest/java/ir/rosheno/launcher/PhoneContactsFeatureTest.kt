@@ -1,4 +1,4 @@
-package ir.hamrahak.launcher
+package ir.rosheno.launcher
 
 import android.Manifest
 import android.content.Intent
@@ -71,7 +71,7 @@ class PhoneContactsFeatureTest {
 
     @Test fun inAppFormSavesToDeviceContacts() {
         val context = androidx.test.core.app.ApplicationProvider.getApplicationContext<android.content.Context>()
-        val marker = "Hamrahak Test " + java.util.UUID.randomUUID().toString()
+        val marker = "Rosheno Test " + java.util.UUID.randomUUID().toString()
         try {
             compose.setContent {
                 MaterialTheme { PhoneContactsScreen(0, 2, {}, {}, { error("Must stay inside app") }) }

@@ -1,4 +1,4 @@
-# همراهک · Hamrahak
+# روشنو | Rosheno
 
 An offline Persian Android launcher prototype for older adults, based on the [RFP](RFP_Android_Senior_Launcher_EN.pdf) and [implementation plan](IMPLEMENTATION_PLAN.md).
 
@@ -16,13 +16,13 @@ Requires JDK 17, Android SDK platform 37, and Android Studio or command-line And
 ./gradlew :app:assembleDebug
 ```
 
-Debug APK: `app/build/outputs/apk/debug/app-debug.apk`. Install with `adb install -r app/build/outputs/apk/debug/app-debug.apk` or Android Studio. Minimum Android 9 (API 28); target API 36. The provisional prototype ID is `ir.hamrahak.launcher.prototype`, separate from any future production ID.
+Debug APK: `app/build/outputs/apk/debug/app-debug.apk`. Install with `adb install -r app/build/outputs/apk/debug/app-debug.apk` or Android Studio. Minimum Android 9 (API 28); target API 36. The provisional prototype ID is `ir.rosheno.launcher.prototype`, separate from any future production ID.
 
 The build uses AGP 9.1.1 (built-in Kotlin), Kotlin Compose plugin 2.2.10, and pinned Compose BOM 2026.03.00. These versions match the validated local toolchain; upgrade dependencies deliberately after the prototype gate.
 
 ## Try it
 
-1. Open همراهک and optionally select it as Home when Android asks. Default-Home selection is always explicit.
+1. Open روشنو and optionally select it as Home when Android asks. Default-Home selection is always explicit.
 2. Add a person's name, number, and optional photo. Persian and Arabic digits are accepted.
 3. Choose a text size and select «شروع استفاده».
 
@@ -32,7 +32,7 @@ Home «تماس» now opens a large in-app dial pad. Enter/paste a number, optio
 6. In «تنظیمات», edit contacts, change their order, or choose the trusted help contact. «کمک می‌خواهم» stays visible below Home. If no valid helper is selected, it opens a dedicated contact-selection flow, then shows the named call confirmation after the choice is saved.
 7. To leave, select «انتخاب صفحهٔ اصلی دیگر» in settings and choose the original launcher. Android's Settings → Apps → Default apps → Home app is also available independently.
 
-Camera and photos now have in-app screens with a permanent «بازگشت به همراهک» button. Captured JPEGs stay in app-private `files/captures` storage and appear in «عکس‌های من». «انتخاب عکس از گوشی» opens Android’s picker; selecting an image returns to the in-app viewer. Captures are currently private to this installation and are deleted when the app is uninstalled; export/shared-gallery publishing is not yet implemented.
+Camera and photos now have in-app screens with a permanent «بازگشت به روشنو» button. Captured JPEGs stay in app-private `files/captures` storage and appear in «عکس‌های من». «انتخاب عکس از گوشی» opens Android’s picker; selecting an image returns to the in-app viewer. Captures are currently private to this installation and are deleted when the app is uninstalled; export/shared-gallery publishing is not yet implemented.
 
 Other launched applications retain their own interfaces. Messages now opens an in-app SMS inbox, conversation reader and composer with recipient/text confirmation. The existing default SMS app is preserved and remains the fallback if access is unavailable. No sample personal contacts are installed. The offline «راهنمای تصویری» contains illustrated phone screens, a highlighted tap location, and next/previous steps for calls, apps, photos, returning Home, and help.
 
@@ -45,7 +45,7 @@ On a dedicated clean emulator/test install:
 ./gradlew :app:connectedDebugAndroidTest
 ```
 
-Use a dedicated emulator or test installation. The UI test temporarily saves a fresh configuration and restores the original afterward. Instrumentation covers phone-number normalization, rejecting service/URI commands, configuration persistence, safe photo staging/cleanup, edit/cancel/reorder with activity recreation, and the setup → contact → confirmation → Home → favorite-app journey. Tests do not place calls or change the Home role. Camera tests grant camera access, capture an emulator test frame, and delete their generated images. SMS tests grant READ_SMS/SEND_SMS; send actions use a fake transport and never contact a recipient. Restore the device’s original permission states after testing. Use a dedicated emulator. To retain installed APKs and app data after testing, build/install both APKs and run `adb shell am instrument -w ir.hamrahak.launcher.prototype.test/androidx.test.runner.AndroidJUnitRunner` instead of the Gradle connected task, which may uninstall test apps afterward. Espresso 3.7.0 is pinned explicitly because the Compose test dependency's older transitive version uses an input API removed in Android 17.
+Use a dedicated emulator or test installation. The UI test temporarily saves a fresh configuration and restores the original afterward. Instrumentation covers phone-number normalization, rejecting service/URI commands, configuration persistence, safe photo staging/cleanup, edit/cancel/reorder with activity recreation, and the setup → contact → confirmation → Home → favorite-app journey. Tests do not place calls or change the Home role. Camera tests grant camera access, capture an emulator test frame, and delete their generated images. SMS tests grant READ_SMS/SEND_SMS; send actions use a fake transport and never contact a recipient. Restore the device’s original permission states after testing. Use a dedicated emulator. To retain installed APKs and app data after testing, build/install both APKs and run `adb shell am instrument -w ir.rosheno.launcher.prototype.test/androidx.test.runner.AndroidJUnitRunner` instead of the Gradle connected task, which may uninstall test apps afterward. Espresso 3.7.0 is pinned explicitly because the Compose test dependency's older transitive version uses an input API removed in Android 17.
 
 See [verification record](docs/VERIFICATION.md), [research protocol](docs/RESEARCH_PROTOCOL.md), and [delivery status](docs/DELIVERY_STATUS.md).
 
@@ -61,8 +61,10 @@ Single app module: Compose UI → ViewModel/StateFlow → local ConfigStore; Pla
 
 Not yet implemented: store-eligible SMS handler/release approval (0.4 is direct-install only), contact import, configurable primary home actions, family PIN, production storage migrations, validated full TalkBack behavior, and manufacturer-specific recovery instructions. The current home has six fixed primary tiles plus help; favorite apps are configurable. No claims of measured usability, crash-free rate, physical-device coverage, or production readiness are made.
 
-The working display name is همراهک. Final product naming, package ownership, signing keys, store accounts, Figma handoff, and participant recruitment remain open. The release build has no production signing configuration. Do not use this prototype as an emergency response system.
+The product display name is روشنو | Rosheno. Package ownership, signing keys, store accounts, Figma handoff, and participant recruitment remain open. The release build has no production signing configuration. Do not use this prototype as an emergency response system.
 
 ### Phone contacts
 
 The **مخاطبین** home tile shows all phone contacts after READ_CONTACTS permission, supports name/number search and confirmed calling, and includes a built-in name/number form that saves a local device contact after WRITE_CONTACTS permission. The list refreshes on return and provider changes. Family favorites remain separately configurable. See [contacts details](docs/CONTACTS_FEATURE.md).
+
+Hardware/system Back returns to the previous page. Nested forms, SMS screens and guide steps handle Back before the containing page; Home stays open. Explicit Home navigation clears page history.

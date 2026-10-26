@@ -1,5 +1,5 @@
 <resources>
-    <style name="Theme.Hamrahak.Starting" parent="Theme.Hamrahak">
+    <style name="Theme.Rosheno.Starting" parent="Theme.Rosheno">
         <item name="android:windowSplashScreenBackground">@color/warm_paper</item>
         <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_launcher</item>
         <item name="android:windowSplashScreenIconBackgroundColor">@color/warm_paper</item>

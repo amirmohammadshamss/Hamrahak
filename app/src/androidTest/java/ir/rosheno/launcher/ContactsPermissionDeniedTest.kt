@@ -1,4 +1,4 @@
-package ir.hamrahak.launcher
+package ir.rosheno.launcher
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -36,7 +36,7 @@ class ContactsPermissionDeniedTest {
         compose.onNodeWithText("تنظیم اجازه در گوشی").assertIsDisplayed()
         compose.onNodeWithTag("contacts-search").assertDoesNotExist()
         assertFalse(loaded)
-        compose.onNodeWithText("بازگشت به همراهک").performClick()
+        compose.onNodeWithText("بازگشت به روشنو").performClick()
         assertTrue(returnedHome)
     }
 }

@@ -1,4 +1,4 @@
-package ir.hamrahak.launcher
+package ir.rosheno.launcher
 
 import android.animation.ValueAnimator
 import androidx.compose.animation.core.Animatable
@@ -29,7 +29,7 @@ fun LaunchSplash(onFinished: () -> Unit) {
         if (ValueAnimator.areAnimatorsEnabled()) reveal.animateTo(1f, tween(550))
         finish()
     }
-    HamrahTheme {
+    RoshenoTheme {
         CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
             Surface(color = Paper, modifier = Modifier.fillMaxSize()) {
                 Box(Modifier.fillMaxSize().safeDrawingPadding().padding(32.dp)) {
@@ -37,7 +37,7 @@ fun LaunchSplash(onFinished: () -> Unit) {
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(20.dp)) {
                         Image(painterResource(R.drawable.ic_launcher), contentDescription = null, Modifier.size(112.dp))
-                        Text("همراهک", fontSize = 36.sp, fontWeight = FontWeight.Bold, color = Green)
+                        Text(androidx.compose.ui.res.stringResource(R.string.app_name), textAlign = androidx.compose.ui.text.style.TextAlign.Center, fontSize = 32.sp, fontWeight = FontWeight.Bold, color = Green)
                         Text("روزهای ساده‌تر، کنار هم", fontSize = 20.sp, color = Muted)
                     }
                     TextButton(onClick = { finish() }, modifier = Modifier.align(Alignment.BottomCenter)) {

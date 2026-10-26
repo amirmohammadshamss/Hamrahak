@@ -1,4 +1,4 @@
-package ir.hamrahak.launcher
+package ir.rosheno.launcher
 
 import android.Manifest
 import android.app.Activity
@@ -71,7 +71,7 @@ class DialerFeatureTest {
             assertEquals("tel:09121234567", intercepted.single().dataString)
             compose.onNodeWithTag("dial-key-delete").performScrollTo().performClick()
             compose.onNodeWithText("۰۹۱۲۱۲۳۴۵۶").assertIsDisplayed()
-            compose.onNodeWithText("بازگشت به همراهک").performClick()
+            compose.onNodeWithText("بازگشت به روشنو").performClick()
             compose.onNodeWithText("کمک می‌خواهم").assertIsDisplayed()
         } finally {
             scenario.close()

@@ -6,7 +6,7 @@ Home → «پیام‌ها» now opens an in-app text-message screen. The user c
 
 The composer accepts Persian/Arabic phone digits, offers selected family recipients, preserves drafts through activity recreation, and previews the exact recipient, text and segment count before an explicit «ارسال پیامک» action. Carrier charges are stated before sending. A permission grant alone never sends a message.
 
-The system's existing SMS application stays selected. Hamrahak does not take over incoming SMS/MMS handling, modify read/unread state, delete messages, or claim to be a complete SMS/MMS replacement. The existing SMS application remains available through the fallback button.
+The system's existing SMS application stays selected. Rosheno does not take over incoming SMS/MMS handling, modify read/unread state, delete messages, or claim to be a complete SMS/MMS replacement. The existing SMS application remains available through the fallback button.
 
 ## Installation and permissions
 

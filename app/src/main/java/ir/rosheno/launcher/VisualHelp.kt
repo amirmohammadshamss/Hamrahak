@@ -1,5 +1,6 @@
-package ir.hamrahak.launcher
+package ir.rosheno.launcher
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -36,9 +37,9 @@ private val topics = listOf(
     VisualTopic("عکس گرفتن و برگشتن", "camera", listOf(
         GuideStep("دوربین را باز کنید", "در خانه، «دوربین» را بزنید. اگر گوشی اجازه خواست، استفاده از دوربین را تأیید کنید.", "home", "دوربین"),
         GuideStep("عکس بگیرید", "گوشی را رو به سوژه بگیرید و «عکس گرفتن» را بزنید.", "camera", "عکس گرفتن"),
-        GuideStep("به همراهک برگردید", "پس از دیدن عکس، دکمهٔ «بازگشت به همراهک» را بزنید.", "photo", "بازگشت به همراهک"))),
-    VisualTopic("برگشتن به همراهک", "home", listOf(
-        GuideStep("دکمهٔ بازگشت را بزنید", "در عکس‌ها و دوربین همراهک، دکمهٔ «بازگشت به همراهک» همیشه بالای صفحه است.", "photo", "بازگشت به همراهک"),
+        GuideStep("به روشنو برگردید", "پس از دیدن عکس، دکمهٔ «بازگشت به روشنو» را بزنید.", "photo", "بازگشت به روشنو"))),
+    VisualTopic("برگشتن به روشنو", "home", listOf(
+        GuideStep("دکمهٔ بازگشت را بزنید", "در عکس‌ها و دوربین روشنو، دکمهٔ «بازگشت به روشنو» همیشه بالای صفحه است.", "photo", "بازگشت به روشنو"),
         GuideStep("از برنامه‌های دیگر برگردید", "دکمهٔ خانهٔ گوشی را بزنید؛ در گوشی بدون دکمه، از لبهٔ پایین به بالا بکشید.", "navigation", "خانهٔ گوشی"))),
     VisualTopic("کمک از نزدیکان", "help", listOf(
         GuideStep("دکمهٔ کمک را بزنید", "در خانه، «کمک می‌خواهم» را بزنید.", "home", "کمک می‌خواهم"),
@@ -59,6 +60,9 @@ private val topics = listOf(
 fun VisualHelp() {
     var selected by rememberSaveable { mutableIntStateOf(-1) }
     var index by rememberSaveable { mutableIntStateOf(0) }
+    BackHandler(enabled = selected in topics.indices) {
+        if (index > 0) index-- else selected = -1
+    }
     Text("راهنمای تصویری", fontSize = 26.sp, fontWeight = FontWeight.Bold, color = Ink)
     if (selected !in topics.indices) {
         Text("چه کاری می‌خواهید انجام دهید؟", fontSize = 22.sp, color = Muted)
@@ -98,7 +102,7 @@ fun VisualHelp() {
                 .clearAndSetSemantics { contentDescription = "تصویر راهنما: ${step.caption}" }) {
             Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                 Box(Modifier.size(44.dp, 5.dp).background(Ink, CircleShape))
-                Text(if (step.scene == "dialer") "شماره‌گیر گوشی" else "همراهک", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                Text(if (step.scene == "dialer") "شماره‌گیر گوشی" else "روشنو", fontSize = 18.sp, fontWeight = FontWeight.Bold)
                 when (step.scene) {
                     "home" -> {
                         Text("۱۴:۳۰", fontSize = 30.sp, color = Green)
@@ -118,7 +122,7 @@ fun VisualHelp() {
                         MockAction("عکس‌ها", "photo", false)
                     }
                     "sms-list", "sms-compose", "sms-confirm" -> {
-                        MockAction("بازگشت به همراهک", "home", false)
+                        MockAction("بازگشت به روشنو", "home", false)
                         if (step.scene == "sms-list") {
                             MockAction("مریم", "message", false)
                             MockAction("نوشتن پیام جدید", "message", true)
@@ -131,7 +135,7 @@ fun VisualHelp() {
                         }
                     }
                     "manual-dialer", "start-call" -> {
-                        MockAction("بازگشت به همراهک", "home", false)
+                        MockAction("بازگشت به روشنو", "home", false)
                         Text("شمارهٔ واردشده", fontSize = 22.sp, color = Green)
                         if (step.scene == "manual-dialer") {
                             listOf("۱    ۲    ۳", "۴    ۵    ۶", "۷    ۸    ۹", "+    ۰    پاک").forEach {
@@ -147,7 +151,7 @@ fun VisualHelp() {
                         MockAction("انصراف", "home", false)
                     }
                     "camera", "photo", "navigation" -> {
-                        MockAction("بازگشت به همراهک", "home", step.target == "بازگشت به همراهک")
+                        MockAction("بازگشت به روشنو", "home", step.target == "بازگشت به روشنو")
                         Surface(color = Pale, shape = RoundedCornerShape(20.dp), modifier = Modifier.fillMaxWidth().height(140.dp)) {
                             Box(contentAlignment = Alignment.Center) { LauncherIcon("photo", Green) }
                         }

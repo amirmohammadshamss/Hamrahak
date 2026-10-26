@@ -1,4 +1,4 @@
-package ir.hamrahak.launcher
+package ir.rosheno.launcher
 
 import android.Manifest
 import android.content.Intent
@@ -123,8 +123,8 @@ internal fun PhoneContactsScreen(resumed: Int, size: Int, onHome: () -> Unit, on
         else { waiting = safe; callPermission.launch(Manifest.permission.CALL_PHONE) }
     }
     val textSize = (22 + size * 3).sp
+    BackHandler(enabled = adding) { if (!creation.saving) { adding = false; saveNotice = null; creation.reset() } }
     if (adding) {
-        BackHandler { if (!creation.saving) { adding = false; saveNotice = null; creation.reset() } }
         Column(Modifier.fillMaxSize().imePadding().verticalScroll(rememberScrollState()).padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Text("مخاطب جدید", fontSize = textSize, fontWeight = FontWeight.Bold)
@@ -155,7 +155,7 @@ internal fun PhoneContactsScreen(resumed: Int, size: Int, onHome: () -> Unit, on
         return
     }
     Column(Modifier.fillMaxSize().imePadding().padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        OutlinedButton(onClick = onHome, modifier = Modifier.fillMaxWidth().heightIn(min = 60.dp)) { Text("بازگشت به همراهک", fontSize = 22.sp) }
+        OutlinedButton(onClick = onHome, modifier = Modifier.fillMaxWidth().heightIn(min = 60.dp)) { Text("بازگشت به روشنو", fontSize = 22.sp) }
         Text("مخاطبین", fontSize = textSize, fontWeight = FontWeight.Bold)
         Button(onClick = { creation.reset(); saveNotice = null; adding = true }, modifier = Modifier.fillMaxWidth().heightIn(min = 64.dp)) { Text("افزودن مخاطب جدید", fontSize = 22.sp) }
         saveNotice?.let { Text(it, fontSize = 20.sp) }

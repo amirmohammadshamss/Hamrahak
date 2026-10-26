@@ -1,4 +1,4 @@
-package ir.hamrahak.launcher
+package ir.rosheno.launcher
 
 import android.graphics.BitmapFactory
 import android.icu.text.DateFormat
@@ -63,6 +63,12 @@ private val LocalActionTextSize = compositionLocalOf { 22 }
 fun LauncherApp(model: LauncherViewModel, platform: PlatformActions, homeSignal: Int, resumed: Int) {
     val state by model.state.collectAsStateWithLifecycle()
     var screen by rememberSaveable { mutableStateOf("home") }
+    var pageHistory by rememberSaveable { mutableStateOf(arrayListOf<String>()) }
+    fun navigate(destination: String) {
+        if (destination == "home") pageHistory = arrayListOf()
+        else if (destination != screen) pageHistory = ArrayList(pageHistory + screen)
+        screen = destination
+    }
     var adding by rememberSaveable { mutableStateOf(false) }
     var editingId by rememberSaveable { mutableStateOf<String?>(null) }
     var callingId by rememberSaveable { mutableStateOf<String?>(null) }
@@ -77,7 +83,7 @@ fun LauncherApp(model: LauncherViewModel, platform: PlatformActions, homeSignal:
     var observedSaveToken by rememberSaveable { mutableStateOf<String?>(null) }
     LaunchedEffect(homeSignal) {
         if (homeSignal != previousHomeSignal) {
-            screen = "home"; adding = false; editingId = null; callingId = null; reset = false; pendingHelpId = null
+            navigate("home"); adding = false; editingId = null; callingId = null; reset = false; pendingHelpId = null
             previousHomeSignal = homeSignal
         }
     }
@@ -90,15 +96,18 @@ fun LauncherApp(model: LauncherViewModel, platform: PlatformActions, homeSignal:
         pendingHelpId?.let { id ->
             if (screen == "help-contact" && state.config.helpContactId == id && state.config.contacts.any { it.id == id }) {
                 pendingHelpId = null
-                screen = "home"
+                navigate("home")
                 callingId = id
             }
         }
     }
     LaunchedEffect(screen) { if (screen != "help-contact") pendingHelpId = null }
     // A launcher should not disappear when Back is pressed at its root.
-    BackHandler { screen = "home" }
-    HamrahTheme {
+    BackHandler {
+        screen = pageHistory.lastOrNull() ?: "home"
+        pageHistory = ArrayList(pageHistory.dropLast(1))
+    }
+    RoshenoTheme {
         CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl,
             LocalActionTextSize provides (22 + state.config.size * 3)) {
             Surface(color = Paper, modifier = Modifier.fillMaxSize()) {
@@ -111,8 +120,8 @@ fun LauncherApp(model: LauncherViewModel, platform: PlatformActions, homeSignal:
                             modifier = Modifier.size(44.dp))
                         Spacer(Modifier.width(12.dp))
                         Column(Modifier.weight(1f)) {
-                            Text("همراهک", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-                            Text(if (!state.config.setupComplete) "راه‌اندازی همراهک" else when (screen) {
+                            Text("روشنو", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                            Text(if (!state.config.setupComplete) "راه‌اندازی روشنو" else when (screen) {
                                 "dialer" -> "صفحهٔ شماره‌گیر"
                                 "contacts" -> "صفحهٔ مخاطبین"
                                 "messages" -> "صفحهٔ پیام‌ها"
@@ -121,17 +130,17 @@ fun LauncherApp(model: LauncherViewModel, platform: PlatformActions, homeSignal:
                                 "photo-view" -> "نمایش عکس"
                                 "family" -> "صفحهٔ خانواده"
                                 "apps" -> "صفحهٔ برنامه‌ها"
-                                "settings" -> "تنظیمات همراهک"
-                                "help" -> "راهنمای همراهک"
+                                "settings" -> "تنظیمات روشنو"
+                                "help" -> "راهنمای روشنو"
                                 "help-contact" -> "انتخاب مخاطب کمک"
                                 else -> "روزهای ساده‌تر، کنار هم"
                             }, color = Muted, fontSize = 14.sp)
                         }
                         if (state.config.setupComplete) {
-                            if (screen != "home") TextButton(onClick = { screen = "home" }) {
+                            if (screen != "home") TextButton(onClick = { navigate("home") }) {
                                 Text("خانه", fontSize = 18.sp)
                             }
-                            if (screen != "settings") TextButton(onClick = { screen = "settings" }) {
+                            if (screen != "settings") TextButton(onClick = { navigate("settings") }) {
                                 Text("تنظیمات", fontSize = 18.sp)
                             }
                         }
@@ -143,27 +152,27 @@ fun LauncherApp(model: LauncherViewModel, platform: PlatformActions, homeSignal:
                         key(page, state.config.setupComplete) {
                             when (page) {
                                 "dialer" -> DialerScreen(dialedNumber, { dialedNumber = it }, state.config.contacts, state.config.size,
-                                    onHome = { screen = "home" }, onCall = platform::startUserCall, onSystemDial = platform::dial)
-                                "contacts" -> PhoneContactsScreen(resumed, state.config.size, onHome = { screen = "home" },
+                                    onHome = { navigate("home") }, onCall = platform::startUserCall, onSystemDial = platform::dial)
+                                "contacts" -> PhoneContactsScreen(resumed, state.config.size, onHome = { navigate("home") },
                                     onCall = platform::startUserCall, open = platform::open)
-                                "messages" -> SmsScreen(state.config.contacts, state.config.size, onHome = { screen = "home" }, openSystemMessages = platform::messages)
-                                "camera" -> CameraScreen(onHome = { screen = "home" }, onCaptured = { path ->
-                                    if (screen == "camera") { viewingPhoto = path; screen = "photo-view" }
+                                "messages" -> SmsScreen(state.config.contacts, state.config.size, onHome = { navigate("home") }, openSystemMessages = platform::messages)
+                                "camera" -> CameraScreen(onHome = { navigate("home") }, onCaptured = { path ->
+                                    if (screen == "camera") { viewingPhoto = path; navigate("photo-view") }
                                 })
-                                "photos" -> PhotoLibraryScreen(onHome = { screen = "home" }, onCamera = { screen = "camera" },
-                                    onPhoto = { viewingPhoto = it; screen = "photo-view" })
-                                "photo-view" -> PhotoViewerScreen(viewingPhoto, onHome = { screen = "home" }, onPhotos = { screen = "photos" })
+                                "photos" -> PhotoLibraryScreen(onHome = { navigate("home") }, onCamera = { navigate("camera") },
+                                    onPhoto = { viewingPhoto = it; navigate("photo-view") })
+                                "photo-view" -> PhotoViewerScreen(viewingPhoto, onHome = { navigate("home") }, onPhotos = { navigate("photos") })
                                 else -> Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp),
                                 verticalArrangement = Arrangement.spacedBy(16.dp)) {
                                 if (state.storageError) {
                                     Title("تنظیمات خوانده نشد")
-                                    Body("برای جلوگیری از تغییر اطلاعات، ذخیره‌سازی متوقف شده است. می‌توانید صفحهٔ اصلی قبلی را انتخاب کنید یا همراهک را بازنشانی کنید.")
+                                    Body("برای جلوگیری از تغییر اطلاعات، ذخیره‌سازی متوقف شده است. می‌توانید صفحهٔ اصلی قبلی را انتخاب کنید یا روشنو را بازنشانی کنید.")
                                     Action("انتخاب صفحهٔ اصلی دیگر", platform::homeSettings)
-                                    Action("بازنشانی همراهک", { reset = true }, secondary = true)
+                                    Action("بازنشانی روشنو", { reset = true }, secondary = true)
                                 } else if (!state.config.setupComplete) {
                                     Welcome(state.config, homeSelected, platform, model, { adding = true })
                                 } else when (page) {
-                                    "home" -> Home(state, homeSelected, { screen = it }, { callingId = it }, platform)
+                                    "home" -> Home(state, homeSelected, { navigate(it) }, { callingId = it }, platform)
                                     "family" -> {
                                         Title("خانوادهٔ من")
                                         Body("برای تماس، نام یا عکس فرد را بزنید.")
@@ -180,7 +189,7 @@ fun LauncherApp(model: LauncherViewModel, platform: PlatformActions, homeSignal:
                                         add = { adding = true })
                                 }
                                 if (page != "home" && state.config.setupComplete) {
-                                    Action("بازگشت به خانه", { screen = "home" }, secondary = true)
+                                    Action("بازگشت به خانه", { navigate("home") }, secondary = true)
                                 }
                                 Spacer(Modifier.height(4.dp))
                             }
@@ -190,7 +199,7 @@ fun LauncherApp(model: LauncherViewModel, platform: PlatformActions, homeSignal:
                     if (state.config.setupComplete && !state.storageError && screen == "home") {
                         val trusted = state.config.contacts.find { it.id == state.config.helpContactId }
                         Box(Modifier.padding(horizontal = 20.dp, vertical = 8.dp)) {
-                            HelpAction(trusted) { if (trusted != null) callingId = trusted.id else screen = "help-contact" }
+                            HelpAction(trusted) { if (trusted != null) callingId = trusted.id else navigate("help-contact") }
                         }
                     }
                 }
@@ -216,13 +225,13 @@ fun LauncherApp(model: LauncherViewModel, platform: PlatformActions, homeSignal:
             ) }
             if (reset) AlertDialog(onDismissRequest = { reset = false },
                 title = { Title("تنظیمات پاک شود؟") },
-                text = { Body("فقط مخاطبان انتخاب‌شده، عکس مخاطبان و میان‌برهای همراهک پاک می‌شوند. اطلاعات اصلی گوشی پاک نمی‌شود.") },
-                confirmButton = { TextButton(onClick = { reset = false; model.reset(); screen = "home" }) {
+                text = { Body("فقط مخاطبان انتخاب‌شده، عکس مخاطبان و میان‌برهای روشنو پاک می‌شوند. اطلاعات اصلی گوشی پاک نمی‌شود.") },
+                confirmButton = { TextButton(onClick = { reset = false; model.reset(); navigate("home") }) {
                     Text("پاک کردن تنظیمات", fontSize = 20.sp)
                 } },
                 dismissButton = { TextButton(onClick = { reset = false }) { Text("انصراف", fontSize = 20.sp) } })
             state.message?.let { message -> AlertDialog(onDismissRequest = { model.message(null) },
-                title = { Title("پیام همراهک") }, text = { Body(message) },
+                title = { Title("پیام روشنو") }, text = { Body(message) },
                 confirmButton = { TextButton(onClick = { model.message(null) }) { Text("متوجه شدم", fontSize = 22.sp) } }) }
         }
     }
@@ -230,13 +239,13 @@ fun LauncherApp(model: LauncherViewModel, platform: PlatformActions, homeSignal:
 
 @Composable private fun Welcome(config: LauncherConfig, homeSelected: Boolean, platform: PlatformActions,
     model: LauncherViewModel, add: () -> Unit) {
-    Title("به همراهک خوش آمدید")
+    Title("به روشنو خوش آمدید")
     Body("با کمک یکی از نزدیکان، گوشی را برای خودتان آماده کنید. اطلاعات شما روی همین گوشی می‌ماند.")
     Surface(shape = RoundedCornerShape(24.dp), color = Pale) {
         Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Title("۱. صفحهٔ اصلی شما")
-            Body(if (homeSelected) "همراهک صفحهٔ اصلی گوشی شماست." else "اگر مایلید، همراهک را صفحهٔ اصلی گوشی کنید. هر وقت خواستید می‌توانید آن را عوض کنید.")
-            Action(if (homeSelected) "بررسی صفحهٔ اصلی" else "انتخاب همراهک", platform::chooseHome)
+            Body(if (homeSelected) "روشنو صفحهٔ اصلی گوشی شماست." else "اگر مایلید، روشنو را صفحهٔ اصلی گوشی کنید. هر وقت خواستید می‌توانید آن را عوض کنید.")
+            Action(if (homeSelected) "بررسی صفحهٔ اصلی" else "انتخاب روشنو", platform::chooseHome)
         }
     }
     Title("۲. خانواده و نزدیکان")
@@ -265,7 +274,7 @@ fun LauncherApp(model: LauncherViewModel, platform: PlatformActions, homeSignal:
     }
     if (!homeSelected) Surface(color = Pale, shape = RoundedCornerShape(16.dp),
         modifier = Modifier.fillMaxWidth().clickable(onClick = platform::chooseHome)) {
-        Text("برای بازگشت آسان، همراهک را صفحهٔ اصلی کنید", Modifier.padding(16.dp), fontSize = 18.sp)
+        Text("برای بازگشت آسان، روشنو را صفحهٔ اصلی کنید", Modifier.padding(16.dp), fontSize = 18.sp)
     }
     if (state.config.contacts.isNotEmpty()) {
         Title("تماس سریع")
@@ -426,9 +435,9 @@ private data class Tile(val label: String, val icon: String, val click: () -> Un
                     modifier = Modifier.weight(1f).testTag("contact-down-${c.id}")) { Text("پایین‌تر", fontSize = 18.sp) }
             }
             var confirmDelete by remember(c.id) { mutableStateOf(false) }
-            TextButton(onClick = { confirmDelete = true }) { Text("حذف از همراهک", fontSize = 18.sp) }
+            TextButton(onClick = { confirmDelete = true }) { Text("حذف از روشنو", fontSize = 18.sp) }
             if (confirmDelete) AlertDialog(onDismissRequest = { confirmDelete = false },
-                title = { Title("${c.name} حذف شود؟") }, text = { Body("فقط از همراهک حذف می‌شود؛ مخاطب اصلی گوشی پاک نمی‌شود.") },
+                title = { Title("${c.name} حذف شود؟") }, text = { Body("فقط از روشنو حذف می‌شود؛ مخاطب اصلی گوشی پاک نمی‌شود.") },
                 confirmButton = { TextButton(onClick = { confirmDelete = false; model.removeContact(c.id) }) { Text("حذف") } },
                 dismissButton = { TextButton(onClick = { confirmDelete = false }) { Text("انصراف") } })
         }
@@ -446,13 +455,13 @@ private data class Tile(val label: String, val icon: String, val click: () -> Un
         }
     }
     Title("صفحهٔ اصلی گوشی")
-    Body(if (homeSelected) "همراهک صفحهٔ اصلی است." else "همراهک هنوز صفحهٔ اصلی گوشی نیست.")
-    Action("انتخاب همراهک", platform::chooseHome, secondary = true)
+    Body(if (homeSelected) "روشنو صفحهٔ اصلی است." else "روشنو هنوز صفحهٔ اصلی گوشی نیست.")
+    Action("انتخاب روشنو", platform::chooseHome, secondary = true)
     Body("برای خروج، دکمهٔ زیر را بزنید و صفحهٔ اصلی قبلی گوشی را انتخاب کنید. اطلاعات گوشی پاک نمی‌شود.")
     Action("انتخاب صفحهٔ اصلی دیگر", platform::homeSettings, secondary = true)
     HorizontalDivider()
     Body("نسخهٔ آزمایشی ۰.۴ · اطلاعات فقط روی این گوشی ذخیره می‌شود. قفل تنظیمات هنوز در این نسخه فعال نیست.")
-    TextButton(onClick = reset) { Text("بازنشانی تنظیمات همراهک", fontSize = 20.sp, color = MaterialTheme.colorScheme.error) }
+    TextButton(onClick = reset) { Text("بازنشانی تنظیمات روشنو", fontSize = 20.sp, color = MaterialTheme.colorScheme.error) }
 }
 
 @Composable private fun SizePicker(selected: Int, change: (Int) -> Unit) {

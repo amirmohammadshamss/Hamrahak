@@ -1,4 +1,4 @@
-package ir.hamrahak.launcher
+package ir.rosheno.launcher
 
 import android.app.Activity
 import android.app.PendingIntent
@@ -114,7 +114,7 @@ class SmsSendJournal(context: Context, name: String = "sms-send-results") {
 }
 
 class SmsStatusReceiver : BroadcastReceiver() {
-    companion object { const val ACTION = "ir.hamrahak.launcher.SMS_SENT" }
+    companion object { const val ACTION = "ir.rosheno.launcher.SMS_SENT" }
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action != ACTION) return
         val token = intent.getStringExtra("token") ?: return
@@ -143,7 +143,7 @@ class AndroidSmsTransport(private val context: Context) : SmsTransport {
         check(pieces.size == parts)
         val receipts = ArrayList(pieces.indices.map { index ->
             val intent = Intent(context, SmsStatusReceiver::class.java).setAction(SmsStatusReceiver.ACTION)
-                .setData(Uri.parse("hamrahak-internal://sms/$token/$index"))
+                .setData(Uri.parse("rosheno-internal://sms/$token/$index"))
                 .putExtra("token", token).putExtra("part", index)
             PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE)
         })

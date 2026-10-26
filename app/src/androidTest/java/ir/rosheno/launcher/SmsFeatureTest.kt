@@ -1,4 +1,4 @@
-package ir.hamrahak.launcher
+package ir.rosheno.launcher
 
 import android.Manifest
 import android.app.Activity
@@ -93,7 +93,7 @@ class SmsFeatureTest {
                 SmsViewModel(app, SavedStateHandle(), SmsRepository(source, transport, journal)) as T
         })[SmsViewModel::class.java]
         try {
-            compose.setContent { HamrahTheme { CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+            compose.setContent { RoshenoTheme { CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
                 SmsScreen(listOf(FamilyContact("family", "مریم", "09121234567")), 0, {}, {}, vm)
             } } }
             compose.waitUntil(10_000) { compose.onAllNodes(hasText("مریم")).fetchSemanticsNodes().isNotEmpty() }

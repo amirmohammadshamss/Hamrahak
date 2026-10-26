@@ -93,3 +93,15 @@ Fixed a SecurityException on opening Contacts before READ_CONTACTS was granted: 
 ## In-app contact creation — 0.7.0
 
 Replaced external ACTION_INSERT with the app-owned name/phone form. Debug app and test builds pass; lint reports 0 errors and 6 existing warnings. Three contacts tests pass (8.35s): provider read, search/call selection plus form validation/cancel/state restoration, and real in-app synthetic-contact save with normalized number verified in the Contacts Provider. Synthetic raw contacts are removed in finally cleanup. Permission-denied regression passes separately with both READ_CONTACTS and WRITE_CONTACTS revoked. Test CALL_PHONE grant is also revoked afterward. No real phone calls were made. This supersedes the earlier external-editor acceptance notes.
+
+## Hardware Back navigation
+
+Replaced the global jump-to-home handler with saved page history. Explicit Home actions clear history; hardware/system Back pops the previous route, while Home consumes Back to keep the launcher visible. Nested contacts forms return to the contacts list, guide steps go back one step then to topics, and SMS compose returns to its originating thread/inbox. Splash Back dismisses the splash.
+
+Debug app/test builds and lint passed (0 errors, 6 existing warnings). Two hardware-key regression tests passed on Android 17 (6.696s), injecting KEYCODE_BACK: all seven main destinations, Contacts form, Settings → prior page after activity recreation, Home remaining visible, Photos → Camera → Photos, and guide step → earlier step → topics → Home. No phone calls, SMS sends or contact writes were performed.
+
+## Rosheno project rename
+
+Renamed Gradle project to Rosheno, Kotlin namespace/source directories to ir.rosheno.launcher, prototype application ID to ir.rosheno.launcher.prototype, resource/Compose themes to Rosheno, internal SMS action/URI namespace, UI branding, test references and documentation. Display label in the built APK is روشنو | Rosheno. Source/document text scan reports no former brand references outside ignored build/cache/Git artifacts. Existing source RFP and historical screenshot binaries are retained as reference artifacts. A different application ID is a separate Android installation; existing installation data and default-Home selection do not transfer automatically. Debug app/test APK builds and lint passed.
+
+Renamed-package validation: permission-denied regression passed separately (1 test, 1.361s), then all remaining tests passed (21 tests, 46.385s). Runtime grants introduced by tests were revoked on the new installation. No actual call or carrier SMS was sent.
