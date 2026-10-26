@@ -3,6 +3,7 @@ package ir.hamrahak.launcher
 import android.Manifest
 import android.content.Intent
 import android.provider.ContactsContract
+import android.content.ContentUris
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -15,7 +16,7 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class PhoneContactsFeatureTest {
-    @get:Rule val permissions = GrantPermissionRule.grant(Manifest.permission.READ_CONTACTS, Manifest.permission.CALL_PHONE)
+    @get:Rule val permissions = GrantPermissionRule.grant(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS, Manifest.permission.CALL_PHONE)
     @get:Rule val compose = createComposeRule()
 
     @Test fun deviceContactsProviderCanBeRead() {
@@ -28,7 +29,8 @@ class PhoneContactsFeatureTest {
     @Test fun searchMultipleNumbersConfirmCancelAndCreateContact() {
         val calls = mutableListOf<String>()
         val opened = mutableListOf<Intent>()
-        compose.setContent {
+        val restoration = androidx.compose.ui.test.junit4.StateRestorationTester(compose)
+        restoration.setContent {
             MaterialTheme {
                 PhoneContactsScreen(0, 2, {}, { calls += it }, { opened += it }, loadContacts = {
                     listOf(PhoneContact(1, "Test Alice", listOf("09121234567", "02112345678")),
@@ -52,7 +54,50 @@ class PhoneContactsFeatureTest {
         compose.onNodeWithText("شروع تماس").performClick()
         assertEquals(listOf("02112345678"), calls)
         compose.onNodeWithText("افزودن مخاطب جدید").performClick()
-        assertEquals(Intent.ACTION_INSERT, opened.single().action)
-        assertEquals(ContactsContract.Contacts.CONTENT_TYPE, opened.single().type)
+        compose.onNodeWithText("مخاطب جدید").assertIsDisplayed()
+        compose.onNodeWithText("ذخیرهٔ مخاطب").assertIsNotEnabled()
+        compose.onNodeWithTag("new-contact-name").performTextInput("New Person")
+        compose.onNodeWithTag("new-contact-number").performTextInput("*123#")
+        compose.onNodeWithText("ذخیرهٔ مخاطب").assertIsNotEnabled()
+        compose.onNodeWithTag("new-contact-number").performTextClearance()
+        compose.onNodeWithTag("new-contact-number").performTextInput("۰۹۱۲۱۲۳۴۵۶۷")
+        compose.onNodeWithText("ذخیرهٔ مخاطب").assertIsEnabled()
+        restoration.emulateSavedInstanceStateRestore()
+        compose.onNodeWithTag("new-contact-name").assertTextContains("New Person")
+        compose.onNodeWithTag("new-contact-number").assertTextContains("۰۹۱۲۱۲۳۴۵۶۷")
+        compose.onNodeWithText("انصراف و بازگشت").performScrollTo().performClick()
+        assertTrue(opened.isEmpty())
+    }
+
+    @Test fun inAppFormSavesToDeviceContacts() {
+        val context = androidx.test.core.app.ApplicationProvider.getApplicationContext<android.content.Context>()
+        val marker = "Hamrahak Test " + java.util.UUID.randomUUID().toString()
+        try {
+            compose.setContent {
+                MaterialTheme { PhoneContactsScreen(0, 2, {}, {}, { error("Must stay inside app") }) }
+            }
+            compose.onNodeWithText("افزودن مخاطب جدید").performClick()
+            compose.onNodeWithTag("new-contact-name").performTextInput(marker)
+            compose.onNodeWithTag("new-contact-number").performTextInput("۰۹۱۲۱۲۳۴۵۶۷")
+            compose.onNodeWithText("ذخیرهٔ مخاطب").performScrollTo().performClick()
+            compose.waitUntil(10_000) {
+                compose.onAllNodesWithText("مخاطب در گوشی ذخیره شد.").fetchSemanticsNodes().isNotEmpty()
+            }
+            val saved = readPhoneContacts(context).single { it.name == marker }
+            assertEquals(listOf("09121234567"), saved.numbers)
+            compose.onNodeWithTag("contacts-search").performTextInput(marker)
+            compose.onNodeWithTag("phone-contact-${saved.id}").assertExists()
+        } finally {
+            // Remove only the synthetic record created by this test, even on assertion failure.
+            val ids = mutableListOf<Long>()
+            context.contentResolver.query(ContactsContract.Data.CONTENT_URI,
+                arrayOf(ContactsContract.Data.RAW_CONTACT_ID),
+                "${ContactsContract.Data.MIMETYPE}=? AND ${ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME}=?",
+                arrayOf(ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE, marker), null)?.use { cursor ->
+                while (cursor.moveToNext()) ids += cursor.getLong(0)
+            }
+            ids.distinct().forEach { id -> context.contentResolver.delete(
+                ContentUris.withAppendedId(ContactsContract.RawContacts.CONTENT_URI, id), null, null) }
+        }
     }
 }

@@ -85,3 +85,11 @@ Actual dialer and photo-provider behavior on Android 9 and multiple manufacturer
 ## Contacts feature — 0.6.0
 
 Debug APK and test APK built successfully. Lint: 0 errors, 6 existing warnings. Two focused Android 17 emulator tests passed (4.275s): read-only device Contacts Provider query and fixture-based contacts UI covering search, contacts without numbers, number selection, cancel/confirm call callbacks, and ACTION_INSERT creation intent. No real calls or contact writes occurred. Temporary READ_CONTACTS/CALL_PHONE grants were revoked after testing. Device-editor save/return behavior still needs physical-device acceptance.
+
+## Contacts crash regression
+
+Fixed a SecurityException on opening Contacts before READ_CONTACTS was granted: register the Contacts Provider observer only after permission is available and handle permission revocation during registration. Debug build and lint passed. Permission-denied regression passed (1 test, 1.629s), confirming the explanation/settings UI is usable and no contact query runs without access. Existing contact provider and UI tests also rerun after the fix.
+
+## In-app contact creation — 0.7.0
+
+Replaced external ACTION_INSERT with the app-owned name/phone form. Debug app and test builds pass; lint reports 0 errors and 6 existing warnings. Three contacts tests pass (8.35s): provider read, search/call selection plus form validation/cancel/state restoration, and real in-app synthetic-contact save with normalized number verified in the Contacts Provider. Synthetic raw contacts are removed in finally cleanup. Permission-denied regression passes separately with both READ_CONTACTS and WRITE_CONTACTS revoked. Test CALL_PHONE grant is also revoked afterward. No real phone calls were made. This supersedes the earlier external-editor acceptance notes.

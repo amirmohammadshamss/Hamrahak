@@ -6,7 +6,7 @@ An offline Persian Android launcher prototype for older adults, based on the [RF
 
 **Discovery prototype / platform feasibility spike, not an accepted MVP.** It implements the three flows needed for initial user research: a simple home screen, photo-contact calling through the system dialer, and choosing favorite apps. Home selection, adjustable text, help contact, local persistence, exit guidance, and offline tutorials support evaluating those flows.
 
-No account, backend, internet permission, contacts permission, call-log permission, or analytics SDK. Version 0.4 adds an experimental sideload-only SMS screen using explicitly requested READ_SMS/SEND_SMS access; see [SMS feature and distribution limits](docs/SMS_FEATURE.md). Camera access is requested only inside the camera feature. Version 0.5 adds a manual in-app dial pad; CALL_PHONE is requested at the call action and a separate number confirmation is required. Contacts are entered manually; photos are selected explicitly through the system file picker. Selecting a contact always shows confirmation before opening the dialer; this app never places a call itself.
+No account, backend, internet permission, call-log permission, or analytics SDK. Phone contacts use explicitly requested READ_CONTACTS/WRITE_CONTACTS permissions. Version 0.4 adds an experimental sideload-only SMS screen using explicitly requested READ_SMS/SEND_SMS access; see [SMS feature and distribution limits](docs/SMS_FEATURE.md). Camera access is requested only inside the camera feature. Version 0.5 adds a manual in-app dial pad; CALL_PHONE is requested at the call action and a separate number confirmation is required. Family favorites are entered manually; photos are selected explicitly through the system file picker. Phone contacts and manual dialing use a separate confirmation before starting a call.
 
 ## Build
 
@@ -65,4 +65,4 @@ The working display name is همراهک. Final product naming, package ownershi
 
 ### Phone contacts
 
-The **مخاطبین** home tile shows all phone contacts after READ_CONTACTS permission, supports name/number search and confirmed calling, and opens Android’s contact editor to create a saved contact. The list refreshes on return and provider changes. Family favorites remain separately configurable. See [contacts details](docs/CONTACTS_FEATURE.md).
+The **مخاطبین** home tile shows all phone contacts after READ_CONTACTS permission, supports name/number search and confirmed calling, and includes a built-in name/number form that saves a local device contact after WRITE_CONTACTS permission. The list refreshes on return and provider changes. Family favorites remain separately configurable. See [contacts details](docs/CONTACTS_FEATURE.md).

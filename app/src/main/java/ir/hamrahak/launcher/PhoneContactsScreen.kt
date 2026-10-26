@@ -12,6 +12,13 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextDirection
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.activity.compose.BackHandler
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -47,15 +54,15 @@ internal fun readPhoneContacts(context: android.content.Context): List<PhoneCont
     return result
 }
 
-internal fun newPhoneContactIntent() = Intent(Intent.ACTION_INSERT).apply {
-    type = ContactsContract.Contacts.CONTENT_TYPE
-    putExtra("finishActivityOnSaveCompleted", true)
-}
-
 @Composable
 internal fun PhoneContactsScreen(resumed: Int, size: Int, onHome: () -> Unit, onCall: (String) -> Unit, open: (Intent) -> Unit,
     loadContacts: (android.content.Context) -> List<PhoneContact> = ::readPhoneContacts) {
     val context = LocalContext.current
+    val creation: ContactCreationModel = viewModel()
+    var adding by rememberSaveable { mutableStateOf(false) }
+    var draftName by rememberSaveable { mutableStateOf("") }
+    var draftNumber by rememberSaveable { mutableStateOf("") }
+    var saveNotice by rememberSaveable { mutableStateOf<String?>(null) }
     var revision by remember { mutableIntStateOf(0) }
     var allowed by remember { mutableStateOf(false) }
     var loading by remember { mutableStateOf(false) }
@@ -66,17 +73,39 @@ internal fun PhoneContactsScreen(resumed: Int, size: Int, onHome: () -> Unit, on
     var calling by rememberSaveable { mutableStateOf<String?>(null) }
     var waiting by rememberSaveable { mutableStateOf<String?>(null) }
     var callDenied by rememberSaveable { mutableStateOf(false) }
+    val writePermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { grants ->
+        revision++
+        saveNotice = if (grants[Manifest.permission.WRITE_CONTACTS] == true)
+            "اجازه فعال شد. برای ثبت مخاطب، ذخیره را بزنید."
+        else "اجازهٔ ذخیره داده نشد. نام و شمارهٔ شما حفظ شده است."
+    }
+    LaunchedEffect(creation.saved) {
+        if (creation.saved) {
+            adding = false; draftName = ""; draftNumber = ""; revision++
+            saveNotice = "مخاطب در گوشی ذخیره شد."
+            creation.reset()
+        }
+    }
     val readPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { revision++ }
     val callPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
         val number = waiting; waiting = null; callDenied = !granted
         if (granted) calling = number
     }
-    DisposableEffect(context) {
+    DisposableEffect(context, allowed) {
+        if (!allowed) return@DisposableEffect onDispose {}
         val observer = object : ContentObserver(Handler(Looper.getMainLooper())) {
             override fun onChange(selfChange: Boolean) { revision++ }
         }
-        context.contentResolver.registerContentObserver(ContactsContract.Contacts.CONTENT_URI, true, observer)
-        onDispose { context.contentResolver.unregisterContentObserver(observer) }
+        // Permission can be revoked between the check and provider access.
+        val registered = try {
+            context.contentResolver.registerContentObserver(ContactsContract.Contacts.CONTENT_URI, true, observer)
+            true
+        } catch (_: SecurityException) {
+            allowed = false
+            contacts = emptyList()
+            false
+        }
+        onDispose { if (registered) context.contentResolver.unregisterContentObserver(observer) }
     }
     LaunchedEffect(resumed, revision) {
         allowed = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED
@@ -94,10 +123,42 @@ internal fun PhoneContactsScreen(resumed: Int, size: Int, onHome: () -> Unit, on
         else { waiting = safe; callPermission.launch(Manifest.permission.CALL_PHONE) }
     }
     val textSize = (22 + size * 3).sp
+    if (adding) {
+        BackHandler { if (!creation.saving) { adding = false; saveNotice = null; creation.reset() } }
+        Column(Modifier.fillMaxSize().imePadding().verticalScroll(rememberScrollState()).padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            Text("مخاطب جدید", fontSize = textSize, fontWeight = FontWeight.Bold)
+            Text("نام و شماره را وارد کنید. مخاطب در دفترچهٔ تلفن همین گوشی ذخیره می‌شود.", fontSize = 20.sp)
+            OutlinedTextField(draftName, { draftName = it.take(100) }, label = { Text("نام مخاطب") },
+                enabled = !creation.saving, singleLine = true, textStyle = LocalTextStyle.current.copy(fontSize = textSize),
+                modifier = Modifier.fillMaxWidth().testTag("new-contact-name"))
+            OutlinedTextField(draftNumber, { draftNumber = it.take(32) }, label = { Text("شمارهٔ تلفن") },
+                enabled = !creation.saving, singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                textStyle = LocalTextStyle.current.copy(fontSize = textSize, textDirection = TextDirection.Ltr),
+                isError = draftNumber.isNotBlank() && normalizePhone(draftNumber) == null,
+                modifier = Modifier.fillMaxWidth().testTag("new-contact-number"))
+            saveNotice?.let { Text(it, fontSize = 20.sp) }
+            creation.error?.let { Text(it, fontSize = 20.sp, color = MaterialTheme.colorScheme.error) }
+            Button(enabled = !creation.saving && draftName.isNotBlank() && normalizePhone(draftNumber) != null,
+                modifier = Modifier.fillMaxWidth().heightIn(min = 72.dp), onClick = {
+                    saveNotice = null
+                    if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CONTACTS) == PackageManager.PERMISSION_GRANTED)
+                        creation.save(draftName, draftNumber)
+                    else writePermission.launch(arrayOf(Manifest.permission.WRITE_CONTACTS, Manifest.permission.READ_CONTACTS))
+                }) { Text(if (creation.saving) "در حال ذخیره…" else "ذخیرهٔ مخاطب", fontSize = textSize) }
+            OutlinedButton(enabled = !creation.saving, onClick = { adding = false; saveNotice = null; creation.reset() },
+                modifier = Modifier.fillMaxWidth().heightIn(min = 64.dp)) { Text("انصراف و بازگشت", fontSize = 22.sp) }
+            Text("اگر اجازهٔ ذخیره را قبلاً رد کرده‌اید، می‌توانید آن را در تنظیمات گوشی فعال کنید.", fontSize = 18.sp)
+            TextButton(onClick = { open(Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                android.net.Uri.fromParts("package", context.packageName, null))) }, enabled = !creation.saving) { Text("تنظیم اجازه در گوشی", fontSize = 20.sp) }
+        }
+        return
+    }
     Column(Modifier.fillMaxSize().imePadding().padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         OutlinedButton(onClick = onHome, modifier = Modifier.fillMaxWidth().heightIn(min = 60.dp)) { Text("بازگشت به همراهک", fontSize = 22.sp) }
         Text("مخاطبین", fontSize = textSize, fontWeight = FontWeight.Bold)
-        Button(onClick = { open(newPhoneContactIntent()) }, modifier = Modifier.fillMaxWidth().heightIn(min = 64.dp)) { Text("افزودن مخاطب جدید", fontSize = 22.sp) }
+        Button(onClick = { creation.reset(); saveNotice = null; adding = true }, modifier = Modifier.fillMaxWidth().heightIn(min = 64.dp)) { Text("افزودن مخاطب جدید", fontSize = 22.sp) }
+        saveNotice?.let { Text(it, fontSize = 20.sp) }
         if (!allowed) {
             Text("برای دیدن همهٔ مخاطبین گوشی، اجازهٔ دسترسی به مخاطبین را بدهید.", fontSize = 22.sp)
             Button(onClick = { readPermission.launch(Manifest.permission.READ_CONTACTS) }, modifier = Modifier.fillMaxWidth()) { Text("نمایش مخاطبین گوشی", fontSize = 22.sp) }

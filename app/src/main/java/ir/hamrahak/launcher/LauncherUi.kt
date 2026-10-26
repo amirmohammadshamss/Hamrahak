@@ -105,14 +105,27 @@ fun LauncherApp(model: LauncherViewModel, platform: PlatformActions, homeSignal:
                 if (state.loading) Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
                 } else Column(Modifier.fillMaxSize().safeDrawingPadding()) {
-                    if (screen != "dialer") Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 8.dp),
+                    Row(Modifier.fillMaxWidth().testTag("page-header").padding(horizontal = 20.dp, vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically) {
                         Image(painterResource(R.drawable.ic_launcher), contentDescription = null,
                             modifier = Modifier.size(44.dp))
                         Spacer(Modifier.width(12.dp))
                         Column(Modifier.weight(1f)) {
                             Text("همراهک", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-                            Text("روزهای ساده‌تر، کنار هم", color = Muted, fontSize = 12.sp)
+                            Text(if (!state.config.setupComplete) "راه‌اندازی همراهک" else when (screen) {
+                                "dialer" -> "صفحهٔ شماره‌گیر"
+                                "contacts" -> "صفحهٔ مخاطبین"
+                                "messages" -> "صفحهٔ پیام‌ها"
+                                "camera" -> "صفحهٔ دوربین"
+                                "photos" -> "صفحهٔ عکس‌ها"
+                                "photo-view" -> "نمایش عکس"
+                                "family" -> "صفحهٔ خانواده"
+                                "apps" -> "صفحهٔ برنامه‌ها"
+                                "settings" -> "تنظیمات همراهک"
+                                "help" -> "راهنمای همراهک"
+                                "help-contact" -> "انتخاب مخاطب کمک"
+                                else -> "روزهای ساده‌تر، کنار هم"
+                            }, color = Muted, fontSize = 14.sp)
                         }
                         if (state.config.setupComplete) {
                             if (screen != "home") TextButton(onClick = { screen = "home" }) {
