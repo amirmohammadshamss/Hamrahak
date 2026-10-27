@@ -74,7 +74,8 @@ class DialerFeatureTest {
             assertEquals("tel:09121234567", intercepted.single().dataString)
             compose.onNodeWithTag("dial-key-delete").performScrollTo().performClick()
             compose.onNodeWithText("۰۹۱۲۱۲۳۴۵۶").assertIsDisplayed()
-            compose.onNodeWithText("بازگشت به روشنو").performClick()
+            compose.onNodeWithText("بازگشت به روشنو").assertDoesNotExist()
+            androidx.test.espresso.Espresso.pressBack()
             compose.onNodeWithText("کمک می‌خواهم").assertIsDisplayed()
         } finally {
             scenario.close()

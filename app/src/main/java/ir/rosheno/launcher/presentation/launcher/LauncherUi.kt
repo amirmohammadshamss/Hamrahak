@@ -147,7 +147,7 @@ fun LauncherApp(model: LauncherViewModel, platform: PlatformActions, homeSignal:
                                         choose = { id -> navigation.selectHelper(id); model.setHelp(id) },
                                         add = { navigation.editContact() })
                                 }
-                                if (page != "home" && state.config.setupComplete) {
+                                if (page != "home" && page != "family" && page != "help-contact" && page != "settings" && state.config.setupComplete) {
                                     Action(context.getString(R.string.action_return_home), { navigation.navigate("home") }, secondary = true)
                                 }
                                 Spacer(Modifier.height(4.dp))

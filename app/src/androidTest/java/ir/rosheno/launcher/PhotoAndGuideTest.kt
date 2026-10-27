@@ -43,13 +43,14 @@ class PhotoAndGuideTest {
             val captured = context.filesDir.resolve("captures").listFiles().orEmpty().filter { it.name !in before }
             assertEquals(1, captured.size)
             assertTrue(captured.single().length() > 0)
-            compose.onNodeWithText("بازگشت به روشنو").performClick()
+            compose.onNodeWithText("بازگشت به روشنو").assertDoesNotExist()
+            compose.onNodeWithText("خانه").performClick()
             compose.onNodeWithText("کمک می‌خواهم").assertIsDisplayed()
             compose.onNodeWithText("عکس‌ها").performScrollTo().performClick()
             compose.waitUntil(5_000) { compose.onAllNodes(hasContentDescription("عکس ذخیره‌شده")).fetchSemanticsNodes().isNotEmpty() }
             compose.onAllNodesWithContentDescription("عکس ذخیره‌شده").onFirst().performScrollTo().performClick()
-            compose.onNodeWithText("بازگشت به روشنو").assertIsDisplayed()
-            compose.onNodeWithText("بازگشت به روشنو").performClick()
+            compose.onNodeWithText("بازگشت به روشنو").assertDoesNotExist()
+            compose.onNodeWithText("خانه").performClick()
             compose.onNodeWithText("کمک می‌خواهم").assertIsDisplayed()
         } finally {
             scenario.close()

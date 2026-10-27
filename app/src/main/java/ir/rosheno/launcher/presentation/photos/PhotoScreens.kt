@@ -139,7 +139,6 @@ fun PhotoLibraryScreen(onHome: () -> Unit, onCamera: () -> Unit, onPhoto: (Strin
     }
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri -> uri?.let { onPhoto(it.toString()) } }
     Column(Modifier.fillMaxSize().padding(horizontal = 20.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        ReturnHomeButton(onHome)
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Text(context.getString(R.string.photo_library_title), fontSize = 24.sp, color = Ink)
             if (state.loading) CircularProgressIndicator()
@@ -170,7 +169,6 @@ fun PhotoLibraryScreen(onHome: () -> Unit, onCamera: () -> Unit, onPhoto: (Strin
 fun PhotoViewerScreen(source: String?, onHome: () -> Unit, onPhotos: () -> Unit) {
     val context = LocalContext.current
     Column(Modifier.fillMaxSize().padding(horizontal = 20.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        ReturnHomeButton(onHome)
         source?.let { PhotoImage(it, ContentScale.Fit, Modifier.weight(1f).fillMaxWidth(), context.getString(R.string.page_photo_view)) }
             ?: Text(context.getString(R.string.photo_not_selected), fontSize = 22.sp)
         OutlinedButton(onClick = onPhotos, modifier = Modifier.fillMaxWidth().heightIn(min = 64.dp)) {

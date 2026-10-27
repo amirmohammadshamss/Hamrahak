@@ -43,7 +43,7 @@ class ContactsPermissionDeniedTest {
         compose.onNodeWithText("تنظیم اجازه در گوشی").assertIsDisplayed()
         compose.onNodeWithTag("contacts-search").assertDoesNotExist()
         assertFalse(loaded)
-        compose.onNodeWithText("بازگشت به روشنو").performClick()
-        assertTrue(returnedHome)
+        compose.onNodeWithText("بازگشت به روشنو").assertDoesNotExist()
+        assertFalse(returnedHome)
     }
 }
