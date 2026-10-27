@@ -16,12 +16,26 @@ import androidx.lifecycle.ViewModelStore
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
+import ir.rosheno.launcher.data.sms.PhoneSmsSource
+import ir.rosheno.launcher.data.sms.SmsRepository
+import ir.rosheno.launcher.data.sms.SmsSendJournal
+import ir.rosheno.launcher.domain.model.FamilyContact
+import ir.rosheno.launcher.domain.model.MessagePage
+import ir.rosheno.launcher.domain.model.TextMessage
+import ir.rosheno.launcher.domain.repository.SmsSource
+import ir.rosheno.launcher.domain.repository.SmsTransport
+import ir.rosheno.launcher.domain.sms.smsPartCount
+import ir.rosheno.launcher.domain.sms.splitSmsText
+import ir.rosheno.launcher.presentation.sms.SmsScreen
+import ir.rosheno.launcher.presentation.sms.SmsViewModel
+import ir.rosheno.launcher.presentation.sms.smsReportLabel
+import ir.rosheno.launcher.presentation.theme.RoshenoTheme
+import java.util.UUID
+import java.util.concurrent.atomic.AtomicInteger
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.util.UUID
-import java.util.concurrent.atomic.AtomicInteger
 
 @RunWith(AndroidJUnit4::class)
 class SmsFeatureTest {
@@ -62,7 +76,7 @@ class SmsFeatureTest {
             assertTrue(restored.complete)
             assertTrue(restored.failed)
             assertFalse(restored.sent)
-            assertTrue(smsReportLabel(restored).contains("بخشی"))
+            assertTrue(smsReportLabel(restored, context).contains("بخشی"))
             assertTrue(smsPartCount("سلام ".repeat(60)) > 1)
         } finally { context.deleteSharedPreferences(name) }
     }

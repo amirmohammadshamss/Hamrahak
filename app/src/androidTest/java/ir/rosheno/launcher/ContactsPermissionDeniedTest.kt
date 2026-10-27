@@ -8,6 +8,11 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.core.content.ContextCompat
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import ir.rosheno.launcher.presentation.contacts.PhoneContactsScreen
+import ir.rosheno.launcher.presentation.contacts.ContactsViewModel
+import ir.rosheno.launcher.domain.model.PhoneContact
+import ir.rosheno.launcher.domain.repository.PhoneContactsRepository
+import androidx.lifecycle.SavedStateHandle
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
@@ -24,13 +29,15 @@ class ContactsPermissionDeniedTest {
         assertEquals(PackageManager.PERMISSION_DENIED, ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CONTACTS))
         var loaded = false
         var returnedHome = false
-        compose.setContent {
-            MaterialTheme {
-                PhoneContactsScreen(0, 2, { returnedHome = true }, {}, {}, loadContacts = {
-                    loaded = true
-                    error("Contacts must not be read without permission")
-                })
+        val model = ContactsViewModel(SavedStateHandle(), object : PhoneContactsRepository {
+            override fun load(): List<PhoneContact> {
+                loaded = true
+                error("Contacts must not be read without permission")
             }
+            override fun create(name: String, number: String) { error("No write expected") }
+        })
+        compose.setContent {
+            MaterialTheme { PhoneContactsScreen(0, 2, { returnedHome = true }, {}, {}, model = model) }
         }
         compose.onNodeWithText("نمایش مخاطبین گوشی").assertIsDisplayed()
         compose.onNodeWithText("تنظیم اجازه در گوشی").assertIsDisplayed()

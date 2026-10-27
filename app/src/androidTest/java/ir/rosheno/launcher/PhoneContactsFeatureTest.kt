@@ -1,14 +1,20 @@
 package ir.rosheno.launcher
 
 import android.Manifest
+import android.content.ContentUris
 import android.content.Intent
 import android.provider.ContactsContract
-import android.content.ContentUris
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
+import ir.rosheno.launcher.data.contacts.readPhoneContacts
+import ir.rosheno.launcher.domain.model.PhoneContact
+import ir.rosheno.launcher.presentation.contacts.PhoneContactsScreen
+import ir.rosheno.launcher.presentation.contacts.ContactsViewModel
+import ir.rosheno.launcher.domain.repository.PhoneContactsRepository
+import androidx.lifecycle.SavedStateHandle
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
@@ -30,13 +36,15 @@ class PhoneContactsFeatureTest {
         val calls = mutableListOf<String>()
         val opened = mutableListOf<Intent>()
         val restoration = androidx.compose.ui.test.junit4.StateRestorationTester(compose)
+        val model = ContactsViewModel(SavedStateHandle(), object : PhoneContactsRepository {
+            override fun load() = listOf(
+                PhoneContact(1, "Test Alice", listOf("09121234567", "02112345678")),
+                PhoneContact(2, "Test Bob", emptyList()),
+            )
+            override fun create(name: String, number: String) { error("This fixture only reads contacts") }
+        })
         restoration.setContent {
-            MaterialTheme {
-                PhoneContactsScreen(0, 2, {}, { calls += it }, { opened += it }, loadContacts = {
-                    listOf(PhoneContact(1, "Test Alice", listOf("09121234567", "02112345678")),
-                        PhoneContact(2, "Test Bob", emptyList()))
-                })
-            }
+            MaterialTheme { PhoneContactsScreen(0, 2, {}, { calls += it }, { opened += it }, model = model) }
         }
         compose.onNodeWithText("Test Alice").assertExists()
         compose.onNodeWithTag("phone-contact-2").performClick()

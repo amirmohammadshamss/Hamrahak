@@ -1,4 +1,18 @@
 <resources>
     <color name="brand_green">#19594E</color>
     <color name="warm_paper">#F7F6F0</color>
+    <color name="ink">#193F38</color>
+    <color name="muted">#51675F</color>
+    <color name="pale">#E7EFE8</color>
+    <color name="orange">#854521</color>
+    <color name="hairline">#E2E7DF</color>
+    <color name="error_red">#9D3026</color>
+    <color name="help_background">#F5EADB</color>
+    <color name="help_outline">#E9D9C6</color>
+    <color name="help_icon_background">#EED9C1</color>
+    <color name="on_brand_subtle">#D5E7DA</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="brand_cream">#FFFDF5</color>
+    <color name="brand_peach">#E8B692</color>
 </resources>

@@ -7,6 +7,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import ir.rosheno.launcher.presentation.help.VisualHelp
+import ir.rosheno.launcher.presentation.theme.RoshenoTheme
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

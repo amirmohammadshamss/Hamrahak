@@ -6,6 +6,10 @@ import androidx.lifecycle.ViewModelStore
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import ir.rosheno.launcher.data.config.ConfigStore
+import ir.rosheno.launcher.domain.model.FamilyContact
+import ir.rosheno.launcher.domain.model.LauncherConfig
+import ir.rosheno.launcher.presentation.launcher.LauncherViewModel
 import org.junit.*
 import org.junit.Assert.*
 import org.junit.runner.RunWith
@@ -93,8 +97,8 @@ class LauncherStateTest {
         val vm = model()
         compose.waitUntil(5_000) { vm.state.value.apps.isNotEmpty() }
         val apps = vm.state.value.apps
-        assertTrue(apps.none { it.component.packageName == app.packageName })
+        assertTrue(apps.none { it.packageName == app.packageName })
         assertEquals(apps.size, apps.map { it.key }.distinct().size)
-        assertTrue(apps.any { it.component.packageName == "com.android.settings" })
+        assertTrue(apps.any { it.packageName == "com.android.settings" })
     }
 }

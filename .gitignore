@@ -1,14 +1,18 @@
+# Local build and tooling output
 .gradle/
 .kotlin/
 **/build/
+__pycache__/
+*.py[cod]
+
+# Machine-specific configuration
 local.properties
+.idea/
+*.iml
+.DS_Store
+
+# Private release credentials
 *.jks
 *.keystore
 release.properties
-.DS_Store
-
-
-__pycache__/
-
-# Local release signing key and private credentials
 signing/

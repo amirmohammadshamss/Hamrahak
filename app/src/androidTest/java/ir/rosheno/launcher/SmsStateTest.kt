@@ -1,5 +1,6 @@
 package ir.rosheno.launcher
 
+import ir.rosheno.launcher.presentation.common.resolve
 import android.Manifest
 import android.app.Activity
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
@@ -11,10 +12,20 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
+import ir.rosheno.launcher.data.sms.SmsRepository
+import ir.rosheno.launcher.data.sms.SmsSendJournal
+import ir.rosheno.launcher.domain.model.MessagePage
+import ir.rosheno.launcher.domain.model.SmsSendReport
+import ir.rosheno.launcher.domain.model.TextMessage
+import ir.rosheno.launcher.domain.phone.comparableSmsAddress
+import ir.rosheno.launcher.domain.repository.SmsSource
+import ir.rosheno.launcher.domain.repository.SmsTransport
+import ir.rosheno.launcher.domain.sms.messageThreads
+import ir.rosheno.launcher.presentation.sms.SmsViewModel
+import java.util.concurrent.atomic.AtomicInteger
 import org.junit.*
 import org.junit.Assert.*
 import org.junit.runner.RunWith
-import java.util.concurrent.atomic.AtomicInteger
 
 @RunWith(AndroidJUnit4::class)
 class SmsStateTest {
@@ -78,7 +89,7 @@ class SmsStateTest {
         val model = vm(empty, transport)
         main { model.draft("09121234567", "keep this"); model.sendConfirmed("09121234567", "keep this") }
         compose.waitUntil(5_000) { model.state.value.error != null && !model.state.value.submitting }
-        assertTrue(requireNotNull(model.state.value.error).contains("سیم‌کارت پیش‌فرض"))
+        assertTrue(requireNotNull(model.state.value.error).resolve(app).contains("سیم‌کارت پیش‌فرض"))
         assertEquals("keep this", model.state.value.draft)
         assertTrue(requireNotNull(SmsSendJournal(app).read()).failed)
     }

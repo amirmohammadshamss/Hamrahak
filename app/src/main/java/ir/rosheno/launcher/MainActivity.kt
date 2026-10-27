@@ -9,6 +9,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import ir.rosheno.launcher.platform.PlatformActions
+import ir.rosheno.launcher.presentation.launcher.LauncherApp
+import ir.rosheno.launcher.presentation.launcher.LauncherViewModel
+import ir.rosheno.launcher.presentation.splash.LaunchSplash
 
 class MainActivity : ComponentActivity() {
     private val model: LauncherViewModel by viewModels()

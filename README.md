@@ -1,14 +1,16 @@
 # روشنو | Rosheno
 
-An offline Persian Android launcher prototype for older adults, based on the [RFP](RFP_Android_Senior_Launcher_EN.pdf) and [implementation plan](IMPLEMENTATION_PLAN.md).
+An offline Persian Android launcher prototype for older adults, based on the [RFP](docs/planning/RFP_Android_Senior_Launcher_EN.pdf) and [implementation plan](docs/planning/IMPLEMENTATION_PLAN.md).
 
 ## Current milestone
 
 **Discovery prototype / platform feasibility spike, not an accepted MVP.** It implements the three flows needed for initial user research: a simple home screen, photo-contact calling through the system dialer, and choosing favorite apps. Home selection, adjustable text, help contact, local persistence, exit guidance, and offline tutorials support evaluating those flows.
 
-No account, backend, internet permission, call-log permission, or analytics SDK. Phone contacts use explicitly requested READ_CONTACTS/WRITE_CONTACTS permissions. Version 0.4 adds an experimental sideload-only SMS screen using explicitly requested READ_SMS/SEND_SMS access; see [SMS feature and distribution limits](docs/SMS_FEATURE.md). Camera access is requested only inside the camera feature. Version 0.5 adds a manual in-app dial pad; CALL_PHONE is requested at the call action and a separate number confirmation is required. Family favorites are entered manually; photos are selected explicitly through the system file picker. Phone contacts and manual dialing use a separate confirmation before starting a call.
+No account, backend, internet permission, call-log permission, or analytics SDK. Phone contacts use explicitly requested READ_CONTACTS/WRITE_CONTACTS permissions. Version 0.4 adds an experimental sideload-only SMS screen using explicitly requested READ_SMS/SEND_SMS access; see [SMS feature and distribution limits](docs/features/SMS_FEATURE.md). Camera access is requested only inside the camera feature. Version 0.5 adds a manual in-app dial pad; CALL_PHONE is requested at the call action and a separate number confirmation is required. Family favorites are entered manually; photos are selected explicitly through the system file picker. Phone contacts and manual dialing use a separate confirmation before starting a call.
 
 ## Build
+
+See the [documentation index and repository layout](docs/README.md) for feature notes, planning, testing, and release instructions.
 
 Requires JDK 17, Android SDK platform 37, and Android Studio or command-line Android SDK tools. Set `ANDROID_HOME` or create an untracked `local.properties` with `sdk.dir=/your/android/sdk`.
 
@@ -26,7 +28,7 @@ The build uses AGP 9.1.1 (built-in Kotlin), Kotlin Compose plugin 2.2.10, and pi
 2. Add a person's name, number, and optional photo. Persian and Arabic digits are accepted.
 3. Choose a text size and select «شروع استفاده».
 
-Home «تماس» now opens a large in-app dial pad. Enter/paste a number, optionally choose a family number, tap «تماس با این شماره», grant phone permission if requested, and confirm «شروع تماس». In-call controls are provided by the existing phone application; no default Phone role is requested. [Dialer details](docs/DIALER_FEATURE.md).
+Home «تماس» now opens a large in-app dial pad. Enter/paste a number, optionally choose a family number, tap «تماس با این شماره», grant phone permission if requested, and confirm «شروع تماس». In-call controls are provided by the existing phone application; no default Phone role is requested. [Dialer details](docs/features/DIALER_FEATURE.md).
 4. Use the quick photo shortcuts for the first two contacts on Home, or open «خانوادهٔ من», select the person, and review the confirmation. «رفتن به تلفن» opens the system dialer; placing a call requires another action there.
 5. In «برنامه‌ها», tap an app’s actual icon/name to open it, or add up to eight favorites. Settings allow changing their order.
 6. In «تنظیمات», edit contacts, change their order, or choose the trusted help contact. «کمک می‌خواهم» stays visible below Home. If no valid helper is selected, it opens a dedicated contact-selection flow, then shows the named call confirmation after the choice is saved.
@@ -42,6 +44,7 @@ Start a dedicated emulator with JDK 17 and the Android SDK configured, then run:
 
 ```sh
 python3 -m unittest discover -s scripts -p '*_test.py'
+./gradlew :app:testDebugUnitTest
 python3 scripts/test-android.py --serial emulator-5554
 python3 scripts/test-android.py --serial emulator-5554 --skip-build --large-text
 ```
@@ -50,24 +53,24 @@ The runner builds the app and test APKs, runs lint, installs both, tests denied 
 
 Tests cover the current app features, including setup, family CRUD/help, device contacts, in-app contact creation, dialing, app shortcuts, camera/gallery, every illustrated guide, SMS, settings/reset/recovery, branding at startup, and hardware Back. Phone intents are intercepted, SMS sends use fake transports, contact fixtures are removed, and reset/storage-damage tests use isolated files/preferences.
 
-The [Android test workflow](.github/workflows/android-tests.yml) runs on pushes, pull requests and manual dispatch with API 28 and API 37 emulators; API 37 uses 150% text size. Reports are retained as CI artifacts. See [test coverage and commands](docs/AUTOMATED_TESTS.md) and the [verification record](docs/VERIFICATION.md).
+The [Android test workflow](.github/workflows/android-tests.yml) runs on pushes, pull requests and manual dispatch with API 28 and API 37 emulators; API 37 uses 150% text size. Reports are retained as CI artifacts. See [test coverage and commands](docs/testing/AUTOMATED_TESTS.md) and the [verification record](docs/testing/VERIFICATION.md).
 
 Version 0.3 introduced bundled Vazirmatn Persian typography, an adaptive house-and-heart icon (including a themed monochrome version), native launch branding, a skippable 550ms brand entrance for manual cold launches, finite page fades, and tile press feedback. Home-key returns skip the brand entrance, and motion honors Android’s animation setting. Font copyright/license is included in the APK and in [Vazirmatn-OFL.txt](docs/licenses/Vazirmatn-OFL.txt).
 
-The automated suite currently contains 41 instrumented tests and two host-side checks for test-result parsing. Lint reports zero errors and six existing warnings. See the verification record for executed environments and results.
+The automated suite contains 41 instrumented tests, nine JVM domain tests, 14 JVM ViewModel tests, and six Python checks for architecture boundaries and test-result parsing. See the verification record for executed environments and results.
 
 [View the new splash screen](docs/screenshots/prototype-splash-v0.3.png) and [illustrated guide](docs/screenshots/prototype-guide-v0.3.png).
 
 ## Architecture and limitations
 
-Single app module: Compose UI → ViewModel/StateFlow → local ConfigStore; PlatformActions wraps official Android intents and Home role. Disk reads/writes and app enumeration run off the main thread. Configuration is versioned JSON in app-private SharedPreferences for the spike. Selected photos are bounded cache drafts until a successful save copies them into private storage. Android backup is disabled. Production Room/DataStore migration remains a planned task, not a completed architecture requirement.
+The single app module is organized into clean architecture packages: `presentation` uses MVVM with feature screens observing ViewModel state, `domain` contains models, repository interfaces, policies and use cases, and `data` implements Android storage and providers. `di/AppContainer` wires implementations; `platform` wraps Android intents and Home role. See [application architecture](docs/ARCHITECTURE.md) for dependency rules and source layout. Disk reads/writes and app enumeration run off the main thread. Configuration remains versioned JSON in app-private SharedPreferences. Selected photos remain cache drafts until a successful save copies them into private storage. Android backup is disabled. Room/DataStore migration remains planned.
 
 Not yet implemented: store-eligible SMS handler/release approval (0.4 is direct-install only), contact import, configurable primary home actions, family PIN, production storage migrations, validated full TalkBack behavior, and manufacturer-specific recovery instructions. The current home has six fixed primary tiles plus help; favorite apps are configurable. No claims of measured usability, crash-free rate, physical-device coverage, or production readiness are made.
 
-The product display name is روشنو | Rosheno. Publishing ownership, store accounts, Figma handoff, and participant recruitment remain open. Local release signing is configured; see [release build](docs/RELEASE_BUILD.md). Do not use this prototype as an emergency response system.
+The product display name is روشنو | Rosheno. Publishing ownership, store accounts, Figma handoff, and participant recruitment remain open. Local release signing is configured; see [release build](docs/release/RELEASE_BUILD.md). Do not use this prototype as an emergency response system.
 
 ### Phone contacts
 
-The **مخاطبین** home tile shows all phone contacts after READ_CONTACTS permission, supports name/number search and confirmed calling, and includes a built-in name/number form that saves a local device contact after WRITE_CONTACTS permission. The list refreshes on return and provider changes. Family favorites remain separately configurable. See [contacts details](docs/CONTACTS_FEATURE.md).
+The **مخاطبین** home tile shows all phone contacts after READ_CONTACTS permission, supports name/number search and confirmed calling, and includes a built-in name/number form that saves a local device contact after WRITE_CONTACTS permission. The list refreshes on return and provider changes. Family favorites remain separately configurable. See [contacts details](docs/features/CONTACTS_FEATURE.md).
 
 Hardware/system Back returns to the previous page. Nested forms, SMS screens and guide steps handle Back before the containing page; Home stays open. Explicit Home navigation clears page history.

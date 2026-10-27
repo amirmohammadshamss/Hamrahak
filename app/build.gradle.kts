@@ -64,12 +64,14 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
 }
 
 // Missing local credentials must never silently produce an unsigned release.
 val validateReleaseCredentials by tasks.registering {
     doLast {
-        check(releaseSigningFile.isFile) { "Missing release.properties. See docs/RELEASE_BUILD.md." }
+        check(releaseSigningFile.isFile) { "Missing release.properties. See docs/release/RELEASE_BUILD.md." }
         listOf("storeFile", "storePassword", "keyAlias", "keyPassword").forEach {
             check(!releaseSigning.getProperty(it).isNullOrBlank()) { "Missing release signing property: $it" }
         }
