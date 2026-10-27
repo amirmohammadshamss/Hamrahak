@@ -19,6 +19,6 @@ class PrivateCaptureRepository(private val context: Context) : CaptureRepository
     }
 
     override fun delete(path: String) {
-        File(path).takeIf { it.parentFile?.canonicalFile == directory.canonicalFile }?.delete()
+        deleteOwnedFile(path, directory)
     }
 }

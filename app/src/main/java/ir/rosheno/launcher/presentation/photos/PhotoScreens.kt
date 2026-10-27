@@ -2,7 +2,6 @@ package ir.rosheno.launcher.presentation.photos
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.graphics.ImageDecoder
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -39,21 +38,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ir.rosheno.launcher.R
 import ir.rosheno.launcher.di.FeatureViewModelFactory
+import ir.rosheno.launcher.platform.decodeBoundedBitmap
 import ir.rosheno.launcher.presentation.common.resolve
 import ir.rosheno.launcher.presentation.components.LauncherIcon
+import ir.rosheno.launcher.presentation.components.ReturnHomeButton
 import ir.rosheno.launcher.presentation.theme.Green
 import ir.rosheno.launcher.presentation.theme.Ink
 import ir.rosheno.launcher.presentation.theme.Pale
 import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-
-@Composable private fun ReturnHome(onHome: () -> Unit) {
-    val context = LocalContext.current
-    Button(onClick = onHome, modifier = Modifier.fillMaxWidth().heightIn(min = 64.dp)) {
-        Text(context.getString(R.string.action_return_to_rosheno), fontSize = 22.sp)
-    }
-}
 
 @Composable
 fun CameraScreen(onHome: () -> Unit, onCaptured: (String) -> Unit, model: CameraViewModel = viewModel(factory = FeatureViewModelFactory)) {
@@ -107,7 +101,7 @@ fun CameraScreen(onHome: () -> Unit, onCaptured: (String) -> Unit, model: Camera
         } catch (_: Exception) { model.captureFailed(path) }
     }
     Column(Modifier.fillMaxSize().padding(horizontal = 20.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        ReturnHome(onHome)
+        ReturnHomeButton(onHome)
         Text(context.getString(R.string.camera_title), fontSize = 24.sp, color = Ink)
         if (!permission) {
             Column(Modifier.weight(1f).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -145,7 +139,7 @@ fun PhotoLibraryScreen(onHome: () -> Unit, onCamera: () -> Unit, onPhoto: (Strin
     }
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri -> uri?.let { onPhoto(it.toString()) } }
     Column(Modifier.fillMaxSize().padding(horizontal = 20.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        ReturnHome(onHome)
+        ReturnHomeButton(onHome)
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Text(context.getString(R.string.photo_library_title), fontSize = 24.sp, color = Ink)
             if (state.loading) CircularProgressIndicator()
@@ -176,7 +170,7 @@ fun PhotoLibraryScreen(onHome: () -> Unit, onCamera: () -> Unit, onPhoto: (Strin
 fun PhotoViewerScreen(source: String?, onHome: () -> Unit, onPhotos: () -> Unit) {
     val context = LocalContext.current
     Column(Modifier.fillMaxSize().padding(horizontal = 20.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        ReturnHome(onHome)
+        ReturnHomeButton(onHome)
         source?.let { PhotoImage(it, ContentScale.Fit, Modifier.weight(1f).fillMaxWidth(), context.getString(R.string.page_photo_view)) }
             ?: Text(context.getString(R.string.photo_not_selected), fontSize = 22.sp)
         OutlinedButton(onClick = onPhotos, modifier = Modifier.fillMaxWidth().heightIn(min = 64.dp)) {
@@ -192,12 +186,8 @@ private fun PhotoImage(source: String, scale: ContentScale, modifier: Modifier, 
     val image by produceState<ImageBitmap?>(null, source) {
         value = withContext(Dispatchers.IO) { runCatching {
             val uri = if (source.startsWith("/")) Uri.fromFile(File(source)) else Uri.parse(source)
-            ImageDecoder.decodeBitmap(ImageDecoder.createSource(context.contentResolver, uri)) { decoder, info, _ ->
-                val limit = if (scale == ContentScale.Crop) 480f else 1600f
-                val ratio = minOf(1f, limit / maxOf(info.size.width, info.size.height))
-                decoder.setTargetSize(maxOf(1, (info.size.width * ratio).toInt()), maxOf(1, (info.size.height * ratio).toInt()))
-                decoder.allocator = ImageDecoder.ALLOCATOR_SOFTWARE
-            }.asImageBitmap()
+            val maxSide = if (scale == ContentScale.Crop) 480 else 1600
+            decodeBoundedBitmap(context, uri, maxSide).asImageBitmap()
         }.getOrNull() }
         failed = value == null
     }

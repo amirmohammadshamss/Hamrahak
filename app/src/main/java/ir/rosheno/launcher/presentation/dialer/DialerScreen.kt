@@ -30,6 +30,7 @@ import ir.rosheno.launcher.domain.phone.comparableSmsAddress
 import ir.rosheno.launcher.domain.phone.persianDigits
 import ir.rosheno.launcher.platform.normalizeDialNumber
 import ir.rosheno.launcher.platform.usesEmergencyDialer
+import ir.rosheno.launcher.presentation.components.ReturnHomeButton
 import ir.rosheno.launcher.presentation.theme.Muted
 
 @Composable
@@ -43,9 +44,7 @@ fun DialerScreen(number: String, onNumberChange: (String) -> Unit, contacts: Lis
     val permission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission(), model::permissionResult)
     Column(Modifier.fillMaxSize().imePadding().padding(horizontal = 20.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        Button(onClick = onHome, modifier = Modifier.fillMaxWidth().heightIn(min = 64.dp)) {
-            Text(context.getString(R.string.action_return_to_rosheno), fontSize = 22.sp)
-        }
+        ReturnHomeButton(onHome)
         Text(context.getString(R.string.dialer_title), fontSize = textSize.sp, fontWeight = FontWeight.Bold)
         OutlinedTextField(number, { onNumberChange(it.take(32)) }, label = { Text(context.getString(R.string.phone_number_label)) },
             modifier = Modifier.fillMaxWidth().testTag("dialer-number"), singleLine = true,

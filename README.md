@@ -57,7 +57,7 @@ The [Android test workflow](.github/workflows/android-tests.yml) runs on pushes,
 
 Version 0.3 introduced bundled Vazirmatn Persian typography, an adaptive house-and-heart icon (including a themed monochrome version), native launch branding, a skippable 550ms brand entrance for manual cold launches, finite page fades, and tile press feedback. Home-key returns skip the brand entrance, and motion honors Android’s animation setting. Font copyright/license is included in the APK and in [Vazirmatn-OFL.txt](docs/licenses/Vazirmatn-OFL.txt).
 
-The automated suite contains 41 instrumented tests, nine JVM domain tests, 14 JVM ViewModel tests, and six Python checks for architecture boundaries and test-result parsing. See the verification record for executed environments and results.
+The automated suite contains 41 instrumented tests, 32 JVM tests, and six Python checks for architecture boundaries and test-result parsing. See the verification record for executed environments and results.
 
 [View the new splash screen](docs/screenshots/prototype-splash-v0.3.png) and [illustrated guide](docs/screenshots/prototype-guide-v0.3.png).
 

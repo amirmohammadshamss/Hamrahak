@@ -49,7 +49,6 @@ class PlatformActions(
         if (safe == null) report(activity.getString(R.string.error_family_number_invalid))
         else open(Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", safe, null)))
     }
-    fun dialer() = open(Intent(Intent.ACTION_DIAL))
     fun startUserCall(number: String) {
         val intent = userCallIntent(number)
         if (intent == null) { report(activity.getString(R.string.error_enter_valid_number)); return }
@@ -66,8 +65,6 @@ class PlatformActions(
         else open(Intent.makeMainActivity(component))
     }
     fun messages() = open(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_APP_MESSAGING))
-    fun photos() = open(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_APP_GALLERY))
-    fun camera() = open(Intent("android.media.action.STILL_IMAGE_CAMERA"))
 }
 
 @Suppress("DEPRECATION")

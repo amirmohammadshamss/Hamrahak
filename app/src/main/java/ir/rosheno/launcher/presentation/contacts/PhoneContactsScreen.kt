@@ -34,6 +34,7 @@ import ir.rosheno.launcher.domain.phone.normalizePhone
 import ir.rosheno.launcher.platform.normalizeDialNumber
 import ir.rosheno.launcher.platform.usesEmergencyDialer
 import ir.rosheno.launcher.presentation.common.resolve
+import ir.rosheno.launcher.presentation.components.ReturnHomeButton
 
 @Composable
 internal fun PhoneContactsScreen(resumed: Int, size: Int, onHome: () -> Unit, onCall: (String) -> Unit, open: (Intent) -> Unit,
@@ -78,7 +79,7 @@ internal fun PhoneContactsScreen(resumed: Int, size: Int, onHome: () -> Unit, on
                 modifier = Modifier.fillMaxWidth().testTag("new-contact-number"))
             state.saveNotice?.let { Text(it.resolve(context), fontSize = 20.sp) }
             state.error?.let { Text(it.resolve(context), fontSize = 20.sp, color = MaterialTheme.colorScheme.error) }
-            Button(enabled = !state.saving && state.draftName.isNotBlank() && normalizePhone(state.draftNumber) != null,
+            Button(enabled = state.canSave,
                 modifier = Modifier.fillMaxWidth().heightIn(min = 72.dp), onClick = {
                     if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CONTACTS) == PackageManager.PERMISSION_GRANTED)
                         model.save()
@@ -93,7 +94,7 @@ internal fun PhoneContactsScreen(resumed: Int, size: Int, onHome: () -> Unit, on
         return
     }
     Column(Modifier.fillMaxSize().imePadding().padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        OutlinedButton(onClick = onHome, modifier = Modifier.fillMaxWidth().heightIn(min = 60.dp)) { Text(context.getString(R.string.action_return_to_rosheno), fontSize = 22.sp) }
+        ReturnHomeButton(onHome, outlined = true, minHeight = 60.dp)
         Text(context.getString(R.string.contacts_title), fontSize = textSize, fontWeight = FontWeight.Bold)
         Button(onClick = model::add, modifier = Modifier.fillMaxWidth().heightIn(min = 64.dp)) { Text(context.getString(R.string.action_add_phone_contact), fontSize = 22.sp) }
         state.saveNotice?.let { Text(it.resolve(context), fontSize = 20.sp) }

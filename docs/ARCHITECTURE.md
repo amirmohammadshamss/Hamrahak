@@ -61,6 +61,13 @@ and bitmap rendering stay in the View. Camera capture paths are consumed before
 dispatch so recomposition cannot start the same capture twice. Permission grants
 open call confirmation; only a separate explicit confirmation dispatches a call.
 
+Contact calling and manual dialing share `CallConfirmationPolicy` and its immutable
+state while retaining their saved-state keys. `ReturnHomeButton` supplies the common
+navigation control, including the contacts screen's outlined variant. Bounded
+bitmap decoding lives in `platform/BitmapDecoder`; the existing contact, thumbnail,
+and viewer size limits are passed by callers. Private photo deletion uses the
+shared canonical-directory ownership check in `data/photos/OwnedFiles`.
+
 User-facing copy lives in `res/values/strings.xml`, including positional format
 arguments for names and counts. ViewModels expose resource-backed `UiText` messages
 that the View resolves with its current context. The shared palette lives in

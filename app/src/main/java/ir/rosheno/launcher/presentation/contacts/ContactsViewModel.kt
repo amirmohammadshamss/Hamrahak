@@ -8,8 +8,8 @@ import ir.rosheno.launcher.domain.model.PhoneContact
 import ir.rosheno.launcher.domain.phone.comparableSmsAddress
 import ir.rosheno.launcher.domain.phone.normalizePhone
 import ir.rosheno.launcher.domain.repository.PhoneContactsRepository
-import ir.rosheno.launcher.platform.normalizeDialNumber
-import ir.rosheno.launcher.platform.usesEmergencyDialer
+import ir.rosheno.launcher.presentation.common.CallConfirmationPolicy
+import ir.rosheno.launcher.presentation.common.CallConfirmationState
 import ir.rosheno.launcher.presentation.common.UiText
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -33,10 +33,11 @@ data class ContactsUiState(
     val saveNotice: UiText.Resource? = null,
     val error: UiText? = null,
     val selectedId: Long? = null,
-    val calling: String? = null,
-    val waiting: String? = null,
-    val callDenied: Boolean = false,
+    val call: CallConfirmationState = CallConfirmationState(),
 ) {
+    val calling get() = call.confirming
+    val waiting get() = call.awaitingPermission
+    val callDenied get() = call.permissionDenied
     val canSave get() = !saving && draftName.isNotBlank() && normalizePhone(draftNumber) != null
     val filtered: List<PhoneContact> get() {
         val search = query.trim()
@@ -51,12 +52,13 @@ class ContactsViewModel(
     private val savedState: SavedStateHandle,
     private val repository: PhoneContactsRepository,
     private val io: kotlinx.coroutines.CoroutineDispatcher = Dispatchers.IO,
+    private val callPolicy: CallConfirmationPolicy = CallConfirmationPolicy(),
 ) : ViewModel() {
     private val mutable = MutableStateFlow(ContactsUiState(
         query = savedState["query"] ?: "", adding = savedState["adding"] ?: false,
         draftName = savedState["name"] ?: "", draftNumber = savedState["number"] ?: "",
-        selectedId = savedState["selected"], calling = savedState["calling"],
-        waiting = savedState["waiting"], callDenied = savedState["denied"] ?: false,
+        selectedId = savedState["selected"],
+        call = CallConfirmationState(savedState["calling"], savedState["waiting"], savedState["denied"] ?: false),
         saveNotice = savedState.get<Int>("notice")?.let { UiText.Resource(it) },
     ))
     val state = mutable.asStateFlow()
@@ -115,19 +117,16 @@ class ContactsViewModel(
     fun add() = change { it.copy(adding = true, saved = false, error = null, saveNotice = null) }
     fun cancelAdd() { if (!state.value.saving) change { it.copy(adding = false, saved = false, error = null, saveNotice = null) } }
     fun select(id: Long?) = change { it.copy(selectedId = id) }
-    fun dismissCall() = change { it.copy(calling = null) }
+    fun dismissCall() = change { it.copy(call = it.call.dismiss()) }
     fun consumeCall(): String? = state.value.calling.also { dismissCall() }
 
     /** True requests Android permission; a grant still requires explicit confirmation. */
     fun requestCall(number: String, canCall: Boolean): Boolean {
-        val safe = normalizeDialNumber(number) ?: return false
-        val needsPermission = !usesEmergencyDialer(safe) && !canCall
-        change { it.copy(selectedId = null, callDenied = false,
-            waiting = if (needsPermission) safe else null, calling = if (needsPermission) null else safe) }
-        return needsPermission
+        val call = callPolicy.request(number, canCall) ?: return false
+        change { it.copy(selectedId = null, call = call) }
+        return call.needsPermission
     }
-    fun callPermissionResult(granted: Boolean) = change { it.copy(waiting = null,
-        calling = if (granted) it.waiting else null, callDenied = !granted) }
+    fun callPermissionResult(granted: Boolean) = change { it.copy(call = callPolicy.permissionResult(it.call, granted)) }
     fun writePermissionResult(granted: Boolean) = change { it.copy(saveNotice = if (granted)
         UiText.Resource(R.string.contact_write_permission_granted) else UiText.Resource(R.string.contact_write_permission_denied)) }
 

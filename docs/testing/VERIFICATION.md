@@ -2,6 +2,14 @@
 
 This record tracks prototype validation by revision. No physical-device or participant acceptance has been completed.
 
+## Duplicate and obsolete code cleanup — 27 October 2026
+
+- Shared call confirmation, list reordering, bounded bitmap decoding, return-home buttons, and owned-file deletion replace repeated implementations. Contacts now uses its existing `canSave` state property.
+- Unused `PlatformActions.dialer()` and test-only legacy `photos()`/`camera()` wrappers are removed. The platform test covers the remaining app, phone, messaging, and Home settings intents.
+- All 70 application Kotlin sources, 14 instrumented-test files, and six JVM test files pass independent compilation. All **32 JVM tests** and **six Python checks** pass.
+- New tests cover shared call permission/confirmation behavior, list reordering and boundaries, and private-file deletion guards including path traversal and symlink parents. Image bounds, button sizes/styles, saved-state keys, and explicit call confirmation are preserved.
+- Logs are under `app/build/reports/cleanup/`. Full Gradle APK/lint and emulator execution remain unverified; independent compiler/runtime details are recorded below.
+
 ## String and color resources — 27 October 2026
 
 - User-facing Kotlin copy is extracted into 301 new string resources, alongside the existing app name. Names/counts use positional format arguments; illustrated keypad spacing is preserved.

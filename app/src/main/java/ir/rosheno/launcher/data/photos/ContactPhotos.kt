@@ -2,9 +2,9 @@ package ir.rosheno.launcher.data.photos
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.ImageDecoder
 import android.net.Uri
 import ir.rosheno.launcher.domain.repository.ContactPhotoRepository
+import ir.rosheno.launcher.platform.decodeBoundedBitmap
 import java.io.File
 import java.util.UUID
 
@@ -16,11 +16,7 @@ class ContactPhotos(private val context: Context) : ContactPhotoRepository {
     override fun stage(source: String): String = stage(Uri.parse(source))
 
     fun stage(uri: Uri): String {
-        val bitmap = ImageDecoder.decodeBitmap(ImageDecoder.createSource(context.contentResolver, uri)) { decoder, info, _ ->
-            val scale = minOf(1f, 512f / maxOf(info.size.width, info.size.height))
-            decoder.setTargetSize(maxOf(1, (info.size.width * scale).toInt()), maxOf(1, (info.size.height * scale).toInt()))
-            decoder.allocator = ImageDecoder.ALLOCATOR_SOFTWARE
-        }
+        val bitmap = decodeBoundedBitmap(context, uri, maxSide = 512)
         drafts.mkdirs()
         val file = File(drafts, "${UUID.randomUUID()}.jpg")
         try {
@@ -45,10 +41,10 @@ class ContactPhotos(private val context: Context) : ContactPhotoRepository {
     }
 
     override fun discardDraft(path: String?) {
-        path?.let { File(it) }?.takeIf { it.parentFile?.canonicalFile == drafts.canonicalFile }?.delete()
+        deleteOwnedFile(path, drafts)
     }
     override fun deleteCommitted(path: String?) {
-        path?.let { File(it) }?.takeIf { it.parentFile?.canonicalFile == photos.canonicalFile }?.delete()
+        deleteOwnedFile(path, photos)
     }
     override fun clear() { photos.deleteRecursively() }
 }

@@ -39,6 +39,7 @@ import ir.rosheno.launcher.domain.sms.messageThreads
 import ir.rosheno.launcher.domain.sms.smsPartCount
 import ir.rosheno.launcher.presentation.common.resolve
 import ir.rosheno.launcher.presentation.components.LauncherIcon
+import ir.rosheno.launcher.presentation.components.ReturnHomeButton
 import ir.rosheno.launcher.presentation.theme.Green
 import ir.rosheno.launcher.presentation.theme.Hairline
 import ir.rosheno.launcher.presentation.theme.Muted
@@ -80,9 +81,7 @@ fun SmsScreen(contacts: List<FamilyContact>, size: Int, onHome: () -> Unit, open
 
     Column(Modifier.fillMaxSize().imePadding().padding(horizontal = 20.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Button(onClick = onHome, modifier = Modifier.fillMaxWidth().heightIn(min = 64.dp)) {
-            Text(context.getString(R.string.action_return_to_rosheno), fontSize = 22.sp)
-        }
+        ReturnHomeButton(onHome)
         Text(if (mode == "compose") context.getString(R.string.sms_compose_title) else if (mode == "thread") thread?.let { sender(it.address) } ?: context.getString(R.string.sms_conversation_title) else context.getString(R.string.sms_inbox_title),
             fontSize = textSize.sp, fontWeight = FontWeight.Bold)
         state.error?.let { error -> Surface(color = MaterialTheme.colorScheme.errorContainer, shape = RoundedCornerShape(16.dp)) {

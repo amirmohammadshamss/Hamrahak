@@ -13,15 +13,16 @@ python3 scripts/test-android.py --serial emulator-5554 --skip-build --large-text
 
 ## Coverage by feature
 
-The JVM suite contains nine tests for domain phone/SMS rules and contact-save,
-photo rollback, configuration cleanup, and reset behavior. Four Python checks
+The JVM suite contains eleven domain tests for domain phone/SMS rules and contact-save,
+photo rollback, configuration cleanup, reset behavior, and list reordering. Four Python checks
 enforce domain isolation, separation of data and presentation, and package paths, and ViewModel independence from Compose.
 See [architecture](../ARCHITECTURE.md) for the layer responsibilities. These run
 alongside the two existing runner-result checks and the instrumented suite below.
 
 Fourteen JVM ViewModel tests cover navigation/history restoration, editor sessions,
 contact loading/retry/search, permission confirmation, denied writes, photo-staging
-cancellation, capture dispatch/cleanup, settings confirmation, app search, and guide progress.
+cancellation, capture dispatch/cleanup, settings confirmation, app search, and guide progress. Seven additional JVM tests
+cover the shared call-confirmation policy and file-ownership deletion boundaries.
 
 - Startup/setup and branding: real MainActivity startup, welcome/setup completion, text-size selection, page headers and Home return paths. Native platform splash timing and OEM icon rendering remain visual checks.
 - Family contacts/help: add, edit, cancel, reorder, activity recreation, help selection/replacement, deletion and invalidating the help contact, invalid-number rejection, nine-contact limit and repeated-save protection. Owned-photo cleanup is tested without touching unrelated files.
