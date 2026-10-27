@@ -107,11 +107,6 @@
     <string name="action_take_photo">عکس گرفتن</string>
     <string name="guide_camera_return_title">به روشنو برگردید</string>
     <string name="guide_camera_return_description">پس از دیدن عکس، دکمهٔ «بازگشت به روشنو» را بزنید.</string>
-    <string name="guide_topic_return">برگشتن به روشنو</string>
-    <string name="guide_return_button_title">دکمهٔ بازگشت را بزنید</string>
-    <string name="guide_return_button_description">در عکس‌ها و دوربین روشنو، دکمهٔ «بازگشت به روشنو» همیشه بالای صفحه است.</string>
-    <string name="guide_return_home_title">از برنامه‌های دیگر برگردید</string>
-    <string name="guide_return_home_description">دکمهٔ خانهٔ گوشی را بزنید؛ در گوشی بدون دکمه، از لبهٔ پایین به بالا بکشید.</string>
     <string name="guide_system_home">خانهٔ گوشی</string>
     <string name="guide_topic_help">کمک از نزدیکان</string>
     <string name="guide_help_button_title">دکمهٔ کمک را بزنید</string>

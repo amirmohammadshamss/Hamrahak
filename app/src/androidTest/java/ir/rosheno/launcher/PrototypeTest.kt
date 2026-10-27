@@ -235,7 +235,8 @@ class PrototypeJourneyTest {
             compose.onNodeWithTag("app-icon-$settingsKey", useUnmergedTree = true).performScrollTo().assertIsDisplayed()
             compose.onNodeWithText("افزودن به دلخواه").performScrollTo().performClick()
             compose.waitUntil(5_000) { settingsKey in store.read().favorites }
-            compose.onNodeWithText("بازگشت به خانه").performScrollTo().performClick()
+            compose.onNodeWithText("بازگشت به خانه").assertDoesNotExist()
+            compose.onNodeWithText("خانه").performClick()
             compose.onAllNodesWithText(settingsLabel).onLast().performScrollTo().assertIsDisplayed()
             // Help stays reachable even at the end of a long home screen.
             compose.onNodeWithText("کمک می‌خواهم").assertIsDisplayed()

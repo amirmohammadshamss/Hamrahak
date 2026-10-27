@@ -30,7 +30,7 @@ class PhotoAndGuideTest {
         try {
             compose.waitUntil(10_000) { compose.onAllNodes(hasText("کمک می‌خواهم")).fetchSemanticsNodes().isNotEmpty() }
             compose.onNodeWithText("دوربین").performScrollTo().performClick()
-            compose.onNodeWithText("بازگشت به روشنو").assertIsDisplayed()
+            compose.onNodeWithText("بازگشت به روشنو").assertDoesNotExist()
             compose.waitUntil(30_000) {
                 compose.onAllNodes(hasTestTag("camera-shutter") and isEnabled()).fetchSemanticsNodes().isNotEmpty()
             }

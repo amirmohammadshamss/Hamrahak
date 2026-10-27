@@ -50,9 +50,6 @@ private fun guideTopics(context: android.content.Context) = listOf(
         GuideStep(context.getString(R.string.guide_camera_open_title), context.getString(R.string.guide_camera_open_description), "home", context.getString(R.string.camera_title)),
         GuideStep(context.getString(R.string.guide_camera_capture_title), context.getString(R.string.guide_camera_capture_description), "camera", context.getString(R.string.action_take_photo)),
         GuideStep(context.getString(R.string.guide_camera_return_title), context.getString(R.string.guide_camera_return_description), "photo", context.getString(R.string.action_return_to_rosheno)))),
-    VisualTopic(context.getString(R.string.guide_topic_return), "home", listOf(
-        GuideStep(context.getString(R.string.guide_return_button_title), context.getString(R.string.guide_return_button_description), "photo", context.getString(R.string.action_return_to_rosheno)),
-        GuideStep(context.getString(R.string.guide_return_home_title), context.getString(R.string.guide_return_home_description), "navigation", context.getString(R.string.guide_system_home)))),
     VisualTopic(context.getString(R.string.guide_topic_help), "help", listOf(
         GuideStep(context.getString(R.string.guide_help_button_title), context.getString(R.string.guide_help_button_description), "home", context.getString(R.string.help_action_label)),
         GuideStep(context.getString(R.string.guide_help_choose_title), context.getString(R.string.guide_help_choose_description), "family", context.getString(R.string.action_choose_help_contact)),

@@ -41,7 +41,6 @@ import ir.rosheno.launcher.di.FeatureViewModelFactory
 import ir.rosheno.launcher.platform.decodeBoundedBitmap
 import ir.rosheno.launcher.presentation.common.resolve
 import ir.rosheno.launcher.presentation.components.LauncherIcon
-import ir.rosheno.launcher.presentation.components.ReturnHomeButton
 import ir.rosheno.launcher.presentation.theme.Green
 import ir.rosheno.launcher.presentation.theme.Ink
 import ir.rosheno.launcher.presentation.theme.Pale
@@ -101,7 +100,6 @@ fun CameraScreen(onHome: () -> Unit, onCaptured: (String) -> Unit, model: Camera
         } catch (_: Exception) { model.captureFailed(path) }
     }
     Column(Modifier.fillMaxSize().padding(horizontal = 20.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        ReturnHomeButton(onHome)
         Text(context.getString(R.string.camera_title), fontSize = 24.sp, color = Ink)
         if (!permission) {
             Column(Modifier.weight(1f).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(16.dp)) {

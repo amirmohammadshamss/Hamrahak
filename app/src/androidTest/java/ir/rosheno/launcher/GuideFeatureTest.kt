@@ -19,7 +19,7 @@ class GuideFeatureTest {
     @Test fun everyIllustratedGuideCanBeCompletedAndReturnsToTopics() {
         compose.setContent { RoshenoTheme { Column(Modifier.verticalScroll(rememberScrollState())) { VisualHelp() } } }
         val topics = listOf("تماس با خانواده" to 4, "باز کردن برنامه" to 2, "عکس گرفتن و برگشتن" to 3,
-            "برگشتن به روشنو" to 2, "کمک از نزدیکان" to 3, "خواندن و فرستادن پیامک" to 4,
+            "کمک از نزدیکان" to 3, "خواندن و فرستادن پیامک" to 4,
             "شماره گرفتن و تماس" to 3)
         topics.forEach { (title, steps) ->
             compose.onNodeWithText(title).performScrollTo().performClick()

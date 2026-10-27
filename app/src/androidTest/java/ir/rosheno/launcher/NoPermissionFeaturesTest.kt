@@ -24,14 +24,14 @@ class NoPermissionFeaturesTest {
     private fun denied(permission: String) = assertEquals(PackageManager.PERMISSION_DENIED,
         ContextCompat.checkSelfPermission(compose.activity, permission))
 
-    @Test fun cameraHasPermissionExplanationAndHomeEscape() {
+    @Test fun cameraHasPermissionExplanationWithoutReturnButton() {
         denied(Manifest.permission.CAMERA)
         var home = false
         compose.setContent { RoshenoTheme { CameraScreen({ home = true }, { error("No capture expected") }) } }
         compose.onNodeWithText("اجازهٔ استفاده از دوربین").assertExists()
         compose.onNodeWithTag("camera-shutter").assertDoesNotExist()
-        compose.onNodeWithText("بازگشت به روشنو").performClick()
-        assertTrue(home)
+        compose.onNodeWithText("بازگشت به روشنو").assertDoesNotExist()
+        assertFalse(home)
     }
     @Test fun smsHasReadPermissionExplanationAndSystemFallback() {
         denied(Manifest.permission.READ_SMS)
